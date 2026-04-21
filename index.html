@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kairos Cap Table Navigator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F2EC;
+    --cream-card: #FBF9F4;
+    --border: #E8E4DC;
+    --border-strong: #D8D2C4;
+    --ink: #1A1A1A;
+    --ink-soft: #4A4A48;
+    --muted: #8B8680;
+    --rust: #B5622A;
+    --founder: #2D6A4F;
+    --pool: #4A2C6E;
+    --advisor: #B5622A;
+    --accel: #2C4A6E;
+    --preseed: #8B6914;
+    --seed: #1A3A5C;
+    --seriesa: #7A1A2E;
+    --green: #2D6A4F;
+    --amber: #C48B2A;
+    --red: #A33A2A;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono, .label, input[type="text"], input[type="number"], select, button.pill {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .label-rust { color: var(--rust); }
+
+  /* Header */
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--ink);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cream);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    font-style: italic;
+  }
+  .logo-wordmark {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  .pill {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .pill:hover { opacity: 0.9; }
+
+  /* Hero */
+  .hero {
+    padding: 56px 40px 36px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    color: var(--rust);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 58px;
+    line-height: 1.05;
+    margin: 0 0 22px;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+    max-width: 900px;
+  }
+  .hero h1 .italic {
+    font-style: italic;
+    font-weight: 400;
+  }
+  .hero .sub {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 680px;
+    line-height: 1.55;
+    font-family: 'Playfair Display', serif;
+  }
+  .hero-actions {
+    margin-top: 28px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .select-wrap, .btn-secondary {
+    background: var(--cream-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .select-wrap select {
+    background: transparent;
+    border: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    letter-spacing: 0.08em;
+  }
+  .btn-secondary:hover, .select-wrap:hover { background: #EFEBE1; }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(360px, 35%) 1fr;
+    gap: 32px;
+    padding: 16px 40px 60px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  @media (max-width: 1050px) {
+    .layout { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 42px; }
+    .hero { padding: 32px 24px 20px; }
+    header.top { padding: 18px 24px; }
+    .layout { padding: 12px 24px 40px; }
+  }
+
+  /* Cards */
+  .card {
+    background: var(--cream-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+  .card h3 {
+    margin: 0 0 4px;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .card .stage-sub {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .card hr.divide {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 14px 0 16px;
+  }
+
+  /* Status badges */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 6px 10px;
+    background: rgba(196, 139, 42, 0.08);
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .status.green {
+    background: rgba(45, 106, 79, 0.1);
+    color: var(--green);
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+  .dot.green { background: var(--green); }
+
+  /* Sliders */
+  .slider-row {
+    margin-bottom: 18px;
+  }
+  .slider-row .row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .slider-row .row-head .name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .slider-row .row-head .val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: var(--border-strong);
+    border-radius: 2px;
+    outline: none;
+    margin: 8px 0 4px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: pointer;
+    border: 2px solid var(--cream);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: pointer;
+    border: 2px solid var(--cream);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  .bench {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    line-height: 1.45;
+    margin-top: 6px;
+  }
+  .bench a { color: var(--rust); text-decoration: none; }
+  .bench a:hover { text-decoration: underline; }
+
+  /* Inputs */
+  input[type="text"], input[type="number"] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-strong);
+    padding: 6px 2px;
+    font-size: 13px;
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  input[type="text"]:focus, input[type="number"]:focus {
+    border-bottom-color: var(--ink);
+  }
+
+  /* Formation summary strip */
+  .formation-summary {
+    margin-bottom: 18px;
+  }
+  .formation-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--border);
+    margin-bottom: 10px;
+  }
+  .formation-bar .fs-seg {
+    height: 100%;
+    transition: width 300ms ease;
+  }
+  .formation-summary-rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+  .formation-summary-rows div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .formation-summary-rows strong {
+    color: var(--ink);
+    margin-left: auto;
+    font-weight: 600;
+  }
+  .dot-square {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+  }
+
+  /* Subsection for founder pool */
+  .subsection {
+    margin-bottom: 4px;
+  }
+  .subsection-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .subsection-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--founder);
+    letter-spacing: 0.02em;
+  }
+  .subsection-meta strong { font-weight: 600; }
+  .impact-note {
+    font-family: 'Playfair Display', serif;
+    font-size: 12.5px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: rgba(45, 106, 79, 0.05);
+    border-left: 2px solid var(--founder);
+    border-radius: 3px;
+  }
+
+  /* Founder rows */
+  .founder-row {
+    padding: 12px 0 14px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .founder-row:last-of-type { border-bottom: none; padding-bottom: 4px; }
+  .founder-row .founder-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .founder-row .remove {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+  }
+  .founder-row .remove:hover { color: var(--red); }
+  .founder-actual {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    transition: color 200ms ease;
+  }
+  .founder-actual strong {
+    color: var(--founder);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .founder-actual .shares-note {
+    color: var(--muted);
+    margin-left: auto;
+    font-size: 10.5px;
+  }
+  .founder-actual.decreased strong { color: var(--amber); }
+
+  /* Impact live note (under dilution sliders) */
+  .impact-live {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--rust);
+    letter-spacing: 0.04em;
+    margin-top: 6px;
+    padding: 4px 0;
+  }
+  .impact-live strong { font-weight: 600; }
+  .btn-add {
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .btn-add:hover { background: var(--cream); border-color: var(--ink-soft); }
+  .btn-add:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Toggles */
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .toggle {
+    position: relative;
+    width: 38px;
+    height: 22px;
+    background: var(--border-strong);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 200ms ease;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: var(--cream-card);
+    border-radius: 50%;
+    transition: left 200ms ease;
+  }
+  .toggle.on { background: var(--ink); }
+  .toggle.on::after { left: 19px; }
+
+  /* Validation */
+  .validation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    margin-top: 10px;
+  }
+  .validation.ok {
+    background: rgba(45, 106, 79, 0.08);
+    color: var(--green);
+  }
+  .validation.warn {
+    background: rgba(163, 58, 42, 0.08);
+    color: var(--red);
+  }
+  .validation.amber {
+    background: rgba(196, 139, 42, 0.1);
+    color: var(--amber);
+  }
+
+  /* Info box */
+  .info-box {
+    background: rgba(44, 74, 110, 0.06);
+    border-left: 3px solid var(--accel);
+    padding: 12px 14px;
+    border-radius: 4px;
+    margin: 12px 0 16px;
+    font-family: 'Playfair Display', serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  /* Calculated fields */
+  .calc-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(26, 26, 26, 0.04);
+    border-radius: 6px;
+    margin-top: 12px;
+  }
+  .calc-field .k {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .calc-field .v {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* Stage summary cards row */
+  .stage-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  @media (max-width: 900px) {
+    .stage-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+  .stage-card {
+    background: var(--cream-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .stage-card .stage-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .stage-card .stage-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+  .stage-card .stage-metric {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  .stage-card .stage-metric .sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    display: block;
+    margin-top: 2px;
+    font-weight: 400;
+  }
+  .stage-card .mini-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .stage-card .mini-bar .fill {
+    height: 100%;
+    transition: width 300ms ease, background 300ms ease;
+  }
+
+  /* Evolution chart */
+  .evo-card { padding: 28px; }
+  .evo-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .evo-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 90px;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .evo-row:last-child { margin-bottom: 0; }
+  .evo-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+  }
+  .evo-label .sub {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 2px;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .bar {
+    display: flex;
+    height: 34px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: var(--border);
+    position: relative;
+  }
+  .bar.phantom { opacity: 0.92; }
+  .bar .seg {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: 0.04em;
+    transition: width 300ms ease;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: default;
+  }
+  .bar .seg[data-small="1"] span { display: none; }
+  .bar .seg:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    letter-spacing: 0.02em;
+    white-space: normal;
+    width: 220px;
+    z-index: 10;
+    line-height: 1.4;
+    text-align: left;
+  }
+  .evo-founder-pct {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--founder);
+    font-weight: 600;
+    text-align: right;
+  }
+  .evo-founder-pct .lbl {
+    display: block;
+    font-size: 9.5px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 400;
+    margin-bottom: 2px;
+  }
+  .phantom-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+  .dilution-summary {
+    background: rgba(122, 26, 46, 0.06);
+    border-left: 3px solid var(--seriesa);
+    padding: 14px 16px;
+    border-radius: 4px;
+    margin-top: 22px;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--ink);
+  }
+  .dilution-summary strong { font-style: normal; color: var(--seriesa); font-weight: 700; }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+  /* Cap table */
+  table.cap {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+  table.cap th {
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 10px 10px 10px 0;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  table.cap td {
+    padding: 12px 10px 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    font-family: 'Playfair Display', serif;
+    color: var(--ink);
+    vertical-align: middle;
+  }
+  table.cap td.mono, table.cap td:nth-child(2), table.cap td:nth-child(3) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    text-align: right;
+  }
+  table.cap td:nth-child(4) {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  table.cap tr.founder-total {
+    background: rgba(45, 106, 79, 0.06);
+  }
+  table.cap tr.founder-total td {
+    font-weight: 600;
+  }
+  table.cap tr.total td {
+    border-bottom: none;
+    border-top: 2px solid var(--ink);
+    font-weight: 700;
+    padding-top: 14px;
+  }
+  .stake-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+
+  /* Glossary */
+  .glossary-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 4px;
+  }
+  .glossary-toggle .chev {
+    font-size: 14px;
+    color: var(--muted);
+    transition: transform 200ms ease;
+  }
+  .glossary-toggle.open .chev { transform: rotate(180deg); }
+  .glossary {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0;
+    margin-top: 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 400ms ease;
+  }
+  .glossary.open { max-height: 2000px; }
+  .glossary dt {
+    padding: 14px 14px 14px 0;
+    border-top: 1px solid var(--border);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .glossary dd {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+
+  /* Sources */
+  .sources {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+    border-top: 1px solid var(--border);
+  }
+  .sources h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--rust);
+    margin: 0 0 18px;
+    font-weight: 500;
+  }
+  .sources ol {
+    list-style: decimal;
+    padding-left: 20px;
+    columns: 2;
+    column-gap: 40px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+  .sources ol li { margin-bottom: 6px; break-inside: avoid; }
+  .sources ol a { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--muted); }
+  .sources ol a:hover { color: var(--rust); }
+  .disclaimer {
+    margin-top: 26px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 700px;
+    line-height: 1.55;
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="logo">
+    <div class="logo-mark">K</div>
+    <div class="logo-wordmark">Kairos</div>
+  </div>
+  <button class="pill">Cap Table Navigator</button>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Digital Health Venture Education</div>
+  <h1>Understanding equity dilution<br><span class="italic">from formation to Series A</span></h1>
+  <div class="sub">Adjust the sliders to see how SAFEs, option pools, and priced rounds reshape founder ownership at each stage. No shares are issued until the first priced round.</div>
+  <div class="hero-actions">
+    <div class="select-wrap">
+      <span class="label">Scenario</span>
+      <select id="scenario">
+        <option value="default">Default</option>
+        <option value="lean">Lean Founding Team</option>
+        <option value="wellfunded">Well-Funded Path</option>
+        <option value="heavy">Heavy SAFE Stack</option>
+      </select>
+    </div>
+    <button class="btn-secondary" id="resetBtn">Reset to Defaults</button>
+  </div>
+</section>
+
+<main class="layout">
+
+  <!-- LEFT PANEL -->
+  <aside class="controls">
+
+    <!-- FORMATION -->
+    <div class="card">
+      <div class="stage-sub">Stage 01</div>
+      <h3>Formation</h3>
+      <hr class="divide">
+
+      <!-- Summary strip -->
+      <div class="formation-summary">
+        <div class="formation-bar">
+          <div class="fs-seg" id="fsFounders" style="background:#2D6A4F;"></div>
+          <div class="fs-seg" id="fsPool" style="background:#4A2C6E;"></div>
+          <div class="fs-seg" id="fsAdvisor" style="background:#B5622A;"></div>
+          <div class="fs-seg" id="fsAccel" style="background:#2C4A6E;"></div>
+        </div>
+        <div class="formation-summary-rows">
+          <div><span class="dot-square" style="background:#2D6A4F;"></span>Founders <strong id="sumFounders">85%</strong></div>
+          <div><span class="dot-square" style="background:#4A2C6E;"></span>Option pool <strong id="sumPool">15%</strong></div>
+          <div><span class="dot-square" style="background:#B5622A;"></span>Advisors <strong id="sumAdvisor">—</strong></div>
+          <div><span class="dot-square" style="background:#2C4A6E;"></span>Accelerator <strong id="sumAccel">—</strong></div>
+        </div>
+      </div>
+
+      <hr class="divide">
+
+      <!-- Founder pool -->
+      <div class="subsection">
+        <div class="subsection-head">
+          <div class="label label-rust">Founder Pool</div>
+          <div class="subsection-meta"><strong id="founderPoolSizePct">85%</strong> of company</div>
+        </div>
+        <div class="impact-note">
+          Each founder's slider sets their share <em>of the founder pool</em>. The pool itself shrinks whenever you add option pool, advisors, or an accelerator below — each founder's company ownership drops in real time.
+        </div>
+        <div id="founderList"></div>
+        <button class="btn-add" id="addFounder">+ Add Founder</button>
+      </div>
+
+      <hr class="divide">
+
+      <!-- Dilution sliders -->
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Option Pool</span>
+          <span class="val" id="poolVal">15%</span>
+        </div>
+        <input type="range" id="pool" min="5" max="25" step="0.5" value="15">
+        <div class="impact-live" id="poolImpact">Reduces founder pool by <strong>15%</strong></div>
+        <div class="bench">VCs typically require 10–20% at Series A (Carta 2023)</div>
+      </div>
+
+      <div class="toggle-row">
+        <span class="name mono" style="font-size:12px;">Advisors</span>
+        <div class="toggle" id="advisorToggle"></div>
+      </div>
+      <div id="advisorBlock" class="hidden">
+        <div class="slider-row">
+          <div class="row-head">
+            <span class="name">Total Advisor Allocation</span>
+            <span class="val" id="advisorVal">2%</span>
+          </div>
+          <input type="range" id="advisor" min="0.5" max="5" step="0.1" value="2">
+          <div class="impact-live" id="advisorImpact">Further reduces founder pool by <strong>2%</strong></div>
+          <div class="bench">Typical advisor grants: 0.1–0.5% per advisor (First Round Capital)</div>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <span class="name mono" style="font-size:12px;">Accelerator / Other Entity</span>
+        <div class="toggle" id="accelToggle"></div>
+      </div>
+      <div id="accelBlock" class="hidden">
+        <div class="slider-row">
+          <div class="row-head">
+            <span class="name">Name</span>
+          </div>
+          <input type="text" id="accelName" placeholder="Y Combinator, MATTER, etc.">
+        </div>
+        <div class="slider-row">
+          <div class="row-head">
+            <span class="name">Equity %</span>
+            <span class="val" id="accelVal">6%</span>
+          </div>
+          <input type="range" id="accel" min="1" max="10" step="0.5" value="6">
+          <div class="impact-live" id="accelImpact">Further reduces founder pool by <strong>6%</strong></div>
+          <div class="bench">Typical accelerator equity: 5–7% (YC Standard Deal: 7% for $500K)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRE-SEED SAFE -->
+    <div class="card">
+      <div class="stage-sub">Stage 02</div>
+      <h3>Pre-Seed SAFE</h3>
+      <hr class="divide">
+
+      <div class="status"><span class="dot"></span>No shares issued yet</div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Amount Raised</span>
+          <span class="val" id="preseedAmtVal">$500K</span>
+        </div>
+        <input type="range" id="preseedAmt" min="100000" max="2000000" step="25000" value="500000">
+        <div class="bench">Pre-seed rounds in digital health: $200K–$1.5M median (Rock Health 2023)</div>
+      </div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Valuation Cap</span>
+          <span class="val" id="preseedCapVal">$6M</span>
+        </div>
+        <input type="range" id="preseedCap" min="3000000" max="15000000" step="250000" value="6000000">
+        <div class="bench">Pre-seed caps in digital health: $4M–$10M typical (Kauffman Fellows 2022)</div>
+      </div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Discount Rate</span>
+          <span class="val" id="preseedDiscVal">20%</span>
+        </div>
+        <input type="range" id="preseedDisc" min="10" max="30" step="5" value="20">
+        <div class="bench">Standard SAFE discount: 15–25% (YC Post-Money SAFE template)</div>
+      </div>
+
+      <div class="calc-field">
+        <span class="k">Implied Ownership at Cap</span>
+        <span class="v" id="preseedImplied">8.33%</span>
+      </div>
+    </div>
+
+    <!-- SEED SAFE -->
+    <div class="card">
+      <div class="stage-sub">Stage 03</div>
+      <h3>Seed SAFE</h3>
+      <hr class="divide">
+
+      <div class="status"><span class="dot"></span>No shares issued yet</div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Amount Raised</span>
+          <span class="val" id="seedAmtVal">$1.5M</span>
+        </div>
+        <input type="range" id="seedAmt" min="250000" max="5000000" step="50000" value="1500000">
+        <div class="bench">Seed rounds in digital health: $1M–$4M median (Rock Health 2024)</div>
+      </div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Valuation Cap</span>
+          <span class="val" id="seedCapVal">$12M</span>
+        </div>
+        <input type="range" id="seedCap" min="6000000" max="30000000" step="500000" value="12000000">
+        <div class="bench">Seed caps in digital health: $8M–$20M typical (PitchBook 2023)</div>
+      </div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Discount Rate</span>
+          <span class="val" id="seedDiscVal">15%</span>
+        </div>
+        <input type="range" id="seedDisc" min="10" max="25" step="5" value="15">
+        <div class="bench">Standard SAFE discount: 15–25% (YC Post-Money SAFE template)</div>
+      </div>
+
+      <div class="calc-field">
+        <span class="k">Implied Ownership at Cap</span>
+        <span class="v" id="seedImplied">12.5%</span>
+      </div>
+    </div>
+
+    <!-- SERIES A -->
+    <div class="card">
+      <div class="stage-sub">Stage 04</div>
+      <h3>Series A — Priced Round</h3>
+      <hr class="divide">
+
+      <div class="status green"><span class="dot green"></span>Conversion event — all SAFEs convert here</div>
+
+      <div class="info-box">
+        This is the first priced round. Both the pre-seed and seed SAFEs convert into equity simultaneously. New shares are created for SAFE holders (at the better of cap or discount), Series A investors, and any option pool top-up required by the lead VC.
+      </div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Amount Raised</span>
+          <span class="val" id="seriesaAmtVal">$10M</span>
+        </div>
+        <input type="range" id="seriesaAmt" min="3000000" max="25000000" step="500000" value="10000000">
+        <div class="bench">Series A in digital health: $7M–$20M median (Rock Health 2024)</div>
+      </div>
+
+      <div class="slider-row">
+        <div class="row-head">
+          <span class="name">Post-Money Valuation</span>
+          <span class="val" id="seriesaPostVal">$35M</span>
+        </div>
+        <input type="range" id="seriesaPost" min="15000000" max="80000000" step="1000000" value="35000000">
+        <div class="bench">Digital health Series A post-money: $20M–$60M typical (CB Insights 2023)</div>
+      </div>
+
+      <div class="calc-field">
+        <span class="k">Pre-Money Valuation</span>
+        <span class="v" id="seriesaPreMoney">$25M</span>
+      </div>
+      <div class="calc-field">
+        <span class="k">Series A Investor Ownership</span>
+        <span class="v" id="seriesaOwn">28.6%</span>
+      </div>
+      <div class="calc-field">
+        <span class="k">Series A Share Price (est.)</span>
+        <span class="v" id="seriesaPrice">$2.14</span>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <section class="visuals">
+
+    <div class="stage-cards" id="stageCards"></div>
+
+    <div class="card evo-card">
+      <div class="evo-head">
+        <div>
+          <div class="label label-rust">Ownership Evolution</div>
+          <h3 style="margin-top:4px;">How equity shifts across stages</h3>
+        </div>
+      </div>
+
+      <div id="evoBars"></div>
+
+      <div class="dilution-summary" id="dilutionSummary"></div>
+
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="card">
+      <div class="label label-rust">Cap Table at Series A</div>
+      <h3 style="margin-top:4px; margin-bottom:18px;">Final breakdown post-conversion</h3>
+      <table class="cap">
+        <thead>
+          <tr>
+            <th>Stakeholder</th>
+            <th style="text-align:right;">Shares</th>
+            <th style="text-align:right;">% Ownership</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="capTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="glossary-toggle" id="glossaryToggle">
+        <div>
+          <div class="label label-rust">Reference</div>
+          <h3 style="margin-top:4px; margin-bottom:0;">Key terms</h3>
+        </div>
+        <span class="chev">▾</span>
+      </div>
+      <dl class="glossary open" id="glossary">
+        <dt>SAFE</dt><dd>Simple Agreement for Future Equity — an investment contract that converts to equity at a later priced round, not a loan.</dd>
+        <dt>Valuation Cap</dt><dd>The maximum company valuation at which a SAFE converts, giving the investor a ceiling on dilution and a floor on ownership.</dd>
+        <dt>Discount Rate</dt><dd>A percentage discount off the Series A share price that SAFE holders receive as compensation for early risk.</dd>
+        <dt>Option Pool</dt><dd>Shares reserved for future employee grants. Typically 10–20% at Series A and often expanded ("topped up") before the round closes, diluting existing holders.</dd>
+        <dt>Pre-Money Valuation</dt><dd>Company value immediately before a new investment closes. Post-money = pre-money + amount raised.</dd>
+        <dt>Conversion Event</dt><dd>A qualified financing (typically the first priced round) that triggers SAFEs to convert into preferred shares.</dd>
+        <dt>Phantom Dilution</dt><dd>The gap between a founder's cap-table-on-paper and real ownership once outstanding SAFEs convert. Easy to overlook because no shares have been issued yet.</dd>
+        <dt>Post-Money SAFE</dt><dd>YC's 2018+ SAFE variant where ownership is locked as a % of post-money valuation. Simpler math, but all dilution from subsequent SAFEs falls on founders.</dd>
+        <dt>Pro-Rata Rights</dt><dd>The right for an existing investor to participate in future rounds to maintain their ownership percentage.</dd>
+      </dl>
+    </div>
+
+  </section>
+
+</main>
+
+<footer class="sources">
+  <h4>Sources & Benchmarks</h4>
+  <ol>
+    <li><a href="https://rockhealth.com/insights/" target="_blank" rel="noopener">Rock Health Digital Health Funding Report 2024</a></li>
+    <li><a href="https://carta.com/blog/state-of-private-markets/" target="_blank" rel="noopener">Carta State of Private Markets Q4 2023</a></li>
+    <li><a href="https://pitchbook.com/news/reports/" target="_blank" rel="noopener">PitchBook Venture Monitor 2023</a></li>
+    <li><a href="https://www.ycombinator.com/documents/" target="_blank" rel="noopener">Y Combinator Post-Money SAFE Primer</a></li>
+    <li><a href="https://www.kauffmanfellows.org/journal_posts/" target="_blank" rel="noopener">Kauffman Fellows Report on SAFE Valuations 2022</a></li>
+    <li><a href="https://firstround.com/review/" target="_blank" rel="noopener">First Round Capital Advisor Equity Guide</a></li>
+    <li><a href="https://www.cbinsights.com/research/report/digital-health-trends/" target="_blank" rel="noopener">CB Insights State of Digital Health 2023</a></li>
+    <li><a href="https://nvca.org/research/nvca-yearbook/" target="_blank" rel="noopener">NVCA Yearbook 2023 (option pool norms)</a></li>
+    <li><a href="https://www.fenwick.com/insights/publications/" target="_blank" rel="noopener">Fenwick & West Trends in Terms of Venture Financings</a></li>
+  </ol>
+  <div class="disclaimer">Benchmarks are illustrative ranges based on industry data. Actual terms vary by company stage, sector, geography, and investor preferences. This tool is for educational purposes only.</div>
+</footer>
+
+<script>
+// ================ STATE ================
+const DEFAULT_STATE = {
+  founders: [
+    { name: 'Founder 1', poolShare: 50 },
+    { name: 'Founder 2', poolShare: 50 }
+  ],
+  pool: 15,
+  advisorOn: false,
+  advisor: 2,
+  accelOn: false,
+  accel: 6,
+  accelName: '',
+  preseedAmt: 500000,
+  preseedCap: 6000000,
+  preseedDisc: 20,
+  seedAmt: 1500000,
+  seedCap: 12000000,
+  seedDisc: 15,
+  seriesaAmt: 10000000,
+  seriesaPost: 35000000
+};
+
+const SCENARIOS = {
+  default: JSON.parse(JSON.stringify(DEFAULT_STATE)),
+  lean: {
+    founders: [{ name: 'Founder 1', poolShare: 50 }, { name: 'Founder 2', poolShare: 50 }],
+    pool: 5, advisorOn: false, advisor: 2, accelOn: false, accel: 6, accelName: '',
+    preseedAmt: 250000, preseedCap: 8000000, preseedDisc: 20,
+    seedAmt: 1000000, seedCap: 15000000, seedDisc: 15,
+    seriesaAmt: 8000000, seriesaPost: 40000000
+  },
+  wellfunded: {
+    founders: [{ name: 'Founder 1', poolShare: 45 }, { name: 'Founder 2', poolShare: 40 }, { name: 'Founder 3', poolShare: 15 }],
+    pool: 15, advisorOn: true, advisor: 2, accelOn: true, accel: 6, accelName: 'Y Combinator',
+    preseedAmt: 1000000, preseedCap: 10000000, preseedDisc: 20,
+    seedAmt: 3000000, seedCap: 20000000, seedDisc: 15,
+    seriesaAmt: 15000000, seriesaPost: 50000000
+  },
+  heavy: {
+    founders: [{ name: 'Founder 1', poolShare: 50 }, { name: 'Founder 2', poolShare: 50 }],
+    pool: 20, advisorOn: true, advisor: 4, accelOn: false, accel: 6, accelName: '',
+    preseedAmt: 1500000, preseedCap: 5000000, preseedDisc: 20,
+    seedAmt: 4000000, seedCap: 10000000, seedDisc: 20,
+    seriesaAmt: 12000000, seriesaPost: 30000000
+  }
+};
+
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+const FOUNDER_COLORS = ['#2D6A4F', '#3F8C6D', '#56A884', '#74C0A0'];
+const COLORS = {
+  pool: '#4A2C6E',
+  advisor: '#B5622A',
+  accel: '#2C4A6E',
+  preseed: '#8B6914',
+  seed: '#1A3A5C',
+  seriesa: '#7A1A2E'
+};
+
+const TOTAL_AUTHORIZED = 10_000_000;
+
+// ================ FORMAT HELPERS ================
+function fmtMoney(n) {
+  if (n >= 1_000_000) return '$' + (n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000) return '$' + Math.round(n / 1000) + 'K';
+  return '$' + n;
+}
+function fmtPct(n, d = 1) { return (n).toFixed(d) + '%'; }
+function fmtShares(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
+  if (n >= 1000) return Math.round(n / 1000) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+// ================ CALCULATION ================
+function founderPoolSize() {
+  const advisor = state.advisorOn ? state.advisor : 0;
+  const accel = state.accelOn ? state.accel : 0;
+  return Math.max(0, 100 - state.pool - advisor - accel);
+}
+
+function founderCompanyPct(founder) {
+  const total = state.founders.reduce((s, f) => s + f.poolShare, 0) || 1;
+  return (founder.poolShare / total) * founderPoolSize();
+}
+
+function calcFormationTotals() {
+  const fpSize = founderPoolSize();
+  const founderTotal = state.founders.reduce((s, f) => s + founderCompanyPct(f), 0);
+  const advisor = state.advisorOn ? state.advisor : 0;
+  const accel = state.accelOn ? state.accel : 0;
+  return {
+    founderTotal,
+    founderPoolSize: fpSize,
+    pool: state.pool,
+    advisor,
+    accel,
+    total: founderTotal + state.pool + advisor + accel
+  };
+}
+
+function calcDilution() {
+  const f = calcFormationTotals();
+  // post-money SAFE math: each SAFE locks in ownership = amount / effective_val
+  // effective_val = min(cap, post_money * (1 - discount))
+  const preEffVal = Math.min(state.preseedCap, state.seriesaPost * (1 - state.preseedDisc / 100));
+  const seedEffVal = Math.min(state.seedCap, state.seriesaPost * (1 - state.seedDisc / 100));
+
+  const preseedPct = state.preseedAmt / preEffVal;
+  const seedPct = state.seedAmt / seedEffVal;
+  const seriesaPct = state.seriesaAmt / state.seriesaPost;
+
+  const newInvestorTotal = preseedPct + seedPct + seriesaPct;
+  const existingShare = Math.max(0, 1 - newInvestorTotal);
+
+  const formationFactor = f.total > 0 ? existingShare / (f.total / 100) : 0;
+
+  const founders = state.founders.map(fd => {
+    const formationPct = founderCompanyPct(fd);
+    return {
+      ...fd,
+      pctFormation: formationPct,
+      pctFinal: formationPct * formationFactor
+    };
+  });
+
+  const poolFinal = state.pool * formationFactor;
+  const advisorFinal = (state.advisorOn ? state.advisor : 0) * formationFactor;
+  const accelFinal = (state.accelOn ? state.accel : 0) * formationFactor;
+
+  // Shares: existing 10M preserved, new shares issued so existing / total = existingShare
+  const totalSharesPost = existingShare > 0 ? TOTAL_AUTHORIZED / existingShare : TOTAL_AUTHORIZED;
+  const seriesaPrice = state.seriesaPost / totalSharesPost;
+  const seriesaPreMoney = state.seriesaPost - state.seriesaAmt;
+
+  return {
+    formation: f,
+    founders,
+    poolFormationPct: state.pool,
+    poolFinalPct: poolFinal,
+    advisorFormationPct: state.advisorOn ? state.advisor : 0,
+    advisorFinalPct: advisorFinal,
+    accelFormationPct: state.accelOn ? state.accel : 0,
+    accelFinalPct: accelFinal,
+    preseedPct: preseedPct * 100,
+    seedPct: seedPct * 100,
+    seriesaPct: seriesaPct * 100,
+    preseedImpliedAtCap: (state.preseedAmt / state.preseedCap) * 100,
+    seedImpliedAtCap: (state.seedAmt / state.seedCap) * 100,
+    preEffVal,
+    seedEffVal,
+    totalSharesPost,
+    seriesaPrice,
+    seriesaPreMoney,
+    postPreseedFounders: 0,
+    postSeedFounders: null
+  };
+}
+
+// ================ RENDER ================
+const founderEls = [];
+
+function buildFounderList() {
+  const list = document.getElementById('founderList');
+  list.innerHTML = '';
+  founderEls.length = 0;
+  state.founders.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'founder-row';
+    row.innerHTML = `
+      <div class="founder-head">
+        <input type="text" value="${escapeHtml(f.name)}" placeholder="Founder ${i + 1}">
+        <button class="remove" ${state.founders.length <= 1 ? 'style="visibility:hidden"' : ''}>Remove</button>
+      </div>
+      <div class="row-head">
+        <span class="name">Share of founder pool</span>
+        <span class="val js-share-val">${f.poolShare.toFixed(1)}%</span>
+      </div>
+      <input type="range" min="0" max="100" step="0.5" value="${f.poolShare}" class="js-share-slider">
+      <div class="founder-actual">
+        <span>=</span>
+        <strong class="js-company-pct">0%</strong>
+        <span>of company</span>
+        <span class="shares-note js-shares-note">· 0 shares</span>
+      </div>
+    `;
+    list.appendChild(row);
+    const refs = {
+      nameInput: row.querySelector('input[type="text"]'),
+      removeBtn: row.querySelector('.remove'),
+      shareSlider: row.querySelector('.js-share-slider'),
+      shareVal: row.querySelector('.js-share-val'),
+      companyPct: row.querySelector('.js-company-pct'),
+      sharesNote: row.querySelector('.js-shares-note'),
+      actualRow: row.querySelector('.founder-actual')
+    };
+    founderEls.push(refs);
+
+    refs.nameInput.addEventListener('input', e => {
+      state.founders[i].name = e.target.value;
+      renderDownstream();
+    });
+    refs.removeBtn.addEventListener('click', () => {
+      if (state.founders.length <= 1) return;
+      state.founders.splice(i, 1);
+      const sum = state.founders.reduce((s, fd) => s + fd.poolShare, 0) || 1;
+      state.founders.forEach(fd => fd.poolShare = (fd.poolShare / sum) * 100);
+      buildFounderList();
+      renderAll();
+    });
+    refs.shareSlider.addEventListener('input', e => {
+      const v = +e.target.value;
+      setFounderPoolShare(i, v);
+      updateFounderValues(i);
+      renderDownstream();
+    });
+  });
+  document.getElementById('addFounder').disabled = state.founders.length >= 4;
+  updateFounderValues();
+}
+
+function setFounderPoolShare(i, newValue) {
+  const n = state.founders.length;
+  if (n === 1) { state.founders[0].poolShare = 100; return; }
+  newValue = Math.max(0, Math.min(100, newValue));
+  state.founders[i].poolShare = newValue;
+  const remaining = 100 - newValue;
+  const othersSum = state.founders.reduce((s, f, idx) => idx === i ? s : s + f.poolShare, 0);
+  if (othersSum < 0.01) {
+    state.founders.forEach((f, idx) => { if (idx !== i) f.poolShare = remaining / (n - 1); });
+  } else {
+    state.founders.forEach((f, idx) => { if (idx !== i) f.poolShare = (f.poolShare / othersSum) * remaining; });
+  }
+}
+
+function updateFounderValues(draggingIdx) {
+  const fpSize = founderPoolSize();
+  state.founders.forEach((f, i) => {
+    const refs = founderEls[i];
+    if (!refs) return;
+    refs.shareVal.textContent = f.poolShare.toFixed(1) + '%';
+    if (i !== draggingIdx) refs.shareSlider.value = f.poolShare;
+    const companyPct = (f.poolShare / 100) * fpSize;
+    refs.companyPct.textContent = companyPct.toFixed(1) + '%';
+    const shares = Math.round(companyPct / 100 * TOTAL_AUTHORIZED);
+    refs.sharesNote.textContent = '· ' + fmtShares(shares) + ' shares';
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+function renderSliderValues() {
+  document.getElementById('poolVal').textContent = state.pool + '%';
+  document.getElementById('advisorVal').textContent = state.advisor + '%';
+  document.getElementById('accelVal').textContent = state.accel + '%';
+  document.getElementById('preseedAmtVal').textContent = fmtMoney(state.preseedAmt);
+  document.getElementById('preseedCapVal').textContent = fmtMoney(state.preseedCap);
+  document.getElementById('preseedDiscVal').textContent = state.preseedDisc + '%';
+  document.getElementById('seedAmtVal').textContent = fmtMoney(state.seedAmt);
+  document.getElementById('seedCapVal').textContent = fmtMoney(state.seedCap);
+  document.getElementById('seedDiscVal').textContent = state.seedDisc + '%';
+  document.getElementById('seriesaAmtVal').textContent = fmtMoney(state.seriesaAmt);
+  document.getElementById('seriesaPostVal').textContent = fmtMoney(state.seriesaPost);
+
+  document.getElementById('advisorBlock').classList.toggle('hidden', !state.advisorOn);
+  document.getElementById('accelBlock').classList.toggle('hidden', !state.accelOn);
+  document.getElementById('advisorToggle').classList.toggle('on', state.advisorOn);
+  document.getElementById('accelToggle').classList.toggle('on', state.accelOn);
+}
+
+function renderFormationSummary() {
+  const fpSize = founderPoolSize();
+  const advisor = state.advisorOn ? state.advisor : 0;
+  const accel = state.accelOn ? state.accel : 0;
+
+  document.getElementById('fsFounders').style.width = fpSize + '%';
+  document.getElementById('fsPool').style.width = state.pool + '%';
+  document.getElementById('fsAdvisor').style.width = advisor + '%';
+  document.getElementById('fsAccel').style.width = accel + '%';
+
+  document.getElementById('sumFounders').textContent = fpSize.toFixed(1) + '%';
+  document.getElementById('sumPool').textContent = state.pool.toFixed(1) + '%';
+  document.getElementById('sumAdvisor').textContent = state.advisorOn ? state.advisor.toFixed(1) + '%' : '—';
+  document.getElementById('sumAccel').textContent = state.accelOn ? state.accel.toFixed(1) + '%' : '—';
+
+  document.getElementById('founderPoolSizePct').textContent = fpSize.toFixed(1) + '%';
+  document.getElementById('poolImpact').innerHTML = `Reduces founder pool by <strong>${state.pool.toFixed(1)}%</strong>`;
+  if (state.advisorOn) document.getElementById('advisorImpact').innerHTML = `Further reduces founder pool by <strong>${state.advisor.toFixed(1)}%</strong>`;
+  if (state.accelOn) document.getElementById('accelImpact').innerHTML = `Further reduces founder pool by <strong>${state.accel.toFixed(1)}%</strong>`;
+}
+
+function renderCalculated(d) {
+  document.getElementById('preseedImplied').textContent = fmtPct(d.preseedImpliedAtCap);
+  document.getElementById('seedImplied').textContent = fmtPct(d.seedImpliedAtCap);
+  document.getElementById('seriesaPreMoney').textContent = fmtMoney(d.seriesaPreMoney);
+  document.getElementById('seriesaOwn').textContent = fmtPct(d.seriesaPct);
+  document.getElementById('seriesaPrice').textContent = '$' + d.seriesaPrice.toFixed(2);
+}
+
+function renderStageCards(d) {
+  const founderFormation = d.founders.reduce((s, f) => s + f.pctFormation, 0);
+  const founderFinal = d.founders.reduce((s, f) => s + f.pctFinal, 0);
+
+  const cards = [
+    {
+      label: 'Stage 01 — Formation',
+      status: 'Shares issued  →',
+      metric: fmtPct(founderFormation, 1),
+      sub: 'Founders at formation',
+      barColor: COLORS.pool ? '#2D6A4F' : '',
+      barPct: Math.min(100, founderFormation)
+    },
+    {
+      label: 'Stage 02 — Pre-Seed SAFE',
+      status: 'No new shares  →',
+      metric: fmtMoney(state.preseedAmt),
+      sub: 'Cap ' + fmtMoney(state.preseedCap) + ' · ' + state.preseedDisc + '% disc',
+      barColor: COLORS.preseed,
+      barPct: Math.min(100, d.preseedImpliedAtCap * 4)
+    },
+    {
+      label: 'Stage 03 — Seed SAFE',
+      status: 'No new shares  →',
+      metric: fmtMoney(state.seedAmt),
+      sub: 'Cap ' + fmtMoney(state.seedCap) + ' · ' + state.seedDisc + '% disc',
+      barColor: COLORS.seed,
+      barPct: Math.min(100, d.seedImpliedAtCap * 4)
+    },
+    {
+      label: 'Stage 04 — Series A',
+      status: 'Conversion event  →',
+      metric: fmtPct(founderFinal, 1),
+      sub: 'Founders post-Series A',
+      barColor: COLORS.seriesa,
+      barPct: Math.min(100, founderFinal)
+    }
+  ];
+
+  const wrap = document.getElementById('stageCards');
+  wrap.innerHTML = cards.map(c => `
+    <div class="stage-card">
+      <div class="stage-label">${c.label}</div>
+      <div class="stage-status">${c.status}</div>
+      <div class="stage-metric">${c.metric}<span class="sub">${c.sub}</span></div>
+      <div class="mini-bar"><div class="fill" style="width:${c.barPct}%; background:${c.barColor};"></div></div>
+    </div>
+  `).join('');
+}
+
+function buildBar(segments, phantom = false) {
+  const total = segments.reduce((s, x) => s + x.pct, 0) || 1;
+  return `<div class="bar ${phantom ? 'phantom' : ''}">
+    ${segments.map(s => {
+      const w = (s.pct / total) * 100;
+      const small = w < 5 ? 1 : 0;
+      return `<div class="seg" data-small="${small}" data-tip="${s.tip}" style="width:${w}%; background:${s.color};"><span>${s.label || (s.pct.toFixed(1) + '%')}</span></div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderEvo(d) {
+  const founderFormationTotal = d.founders.reduce((s, f) => s + f.pctFormation, 0);
+  const founderFinalTotal = d.founders.reduce((s, f) => s + f.pctFinal, 0);
+
+  // Formation
+  const formationSegs = [];
+  d.founders.forEach((f, i) => formationSegs.push({
+    pct: f.pctFormation, color: FOUNDER_COLORS[i % 4],
+    label: f.pctFormation >= 8 ? fmtPct(f.pctFormation, 0) : '',
+    tip: `${f.name}: ${fmtPct(f.pctFormation, 1)} at formation. Founders receive common stock at incorporation, typically with vesting over 4 years.`
+  }));
+  formationSegs.push({ pct: state.pool, color: COLORS.pool, label: state.pool >= 6 ? 'Pool ' + state.pool + '%' : '', tip: `Option Pool: ${state.pool}%. Reserved for future employee equity grants.` });
+  if (state.advisorOn) formationSegs.push({ pct: state.advisor, color: COLORS.advisor, label: state.advisor >= 3 ? 'Adv ' + state.advisor + '%' : '', tip: `Advisors: ${state.advisor}%. Granted to strategic advisors, typically with 2-year vesting.` });
+  if (state.accelOn) formationSegs.push({ pct: state.accel, color: COLORS.accel, label: state.accel >= 4 ? (state.accelName || 'Accel') : '', tip: `${state.accelName || 'Accelerator'}: ${state.accel}%. Equity taken by accelerator in exchange for program capital and services.` });
+
+  // Phantom post-preseed: founders imagine they own (f - preseed_implied_pct)
+  const preseedPhantomFounderFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap));
+  const preSegs = [];
+  d.founders.forEach((f, i) => preSegs.push({
+    pct: f.pctFormation * preseedPhantomFounderFactor,
+    color: FOUNDER_COLORS[i % 4],
+    label: (f.pctFormation * preseedPhantomFounderFactor) >= 8 ? fmtPct(f.pctFormation * preseedPhantomFounderFactor, 0) : '',
+    tip: `${f.name}: ~${fmtPct(f.pctFormation * preseedPhantomFounderFactor, 1)} as-if-converted. Actual shares unchanged — this is the phantom dilution from the pre-seed SAFE.`
+  }));
+  preSegs.push({ pct: state.pool * preseedPhantomFounderFactor, color: COLORS.pool, label: '', tip: `Option Pool (diluted phantom): ${fmtPct(state.pool * preseedPhantomFounderFactor, 1)}.` });
+  if (state.advisorOn) preSegs.push({ pct: state.advisor * preseedPhantomFounderFactor, color: COLORS.advisor, label: '', tip: `Advisors (diluted phantom): ${fmtPct(state.advisor * preseedPhantomFounderFactor, 1)}.` });
+  if (state.accelOn) preSegs.push({ pct: state.accel * preseedPhantomFounderFactor, color: COLORS.accel, label: '', tip: `Accelerator (diluted phantom): ${fmtPct(state.accel * preseedPhantomFounderFactor, 1)}.` });
+  preSegs.push({ pct: state.preseedAmt / state.preseedCap * 100, color: COLORS.preseed, label: 'Pre-seed SAFE', tip: `Pre-seed SAFE (not yet converted). Implied ownership at cap: ${fmtPct(d.preseedImpliedAtCap, 1)}.` });
+
+  // Phantom post-seed: stack both SAFE phantoms
+  const combinedPhantomFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap) - (state.seedAmt / state.seedCap));
+  const postSeedSegs = [];
+  d.founders.forEach((f, i) => postSeedSegs.push({
+    pct: f.pctFormation * combinedPhantomFactor,
+    color: FOUNDER_COLORS[i % 4],
+    label: (f.pctFormation * combinedPhantomFactor) >= 8 ? fmtPct(f.pctFormation * combinedPhantomFactor, 0) : '',
+    tip: `${f.name}: ~${fmtPct(f.pctFormation * combinedPhantomFactor, 1)} as-if-converted. Two SAFEs outstanding — dilution is already locked in on paper.`
+  }));
+  postSeedSegs.push({ pct: state.pool * combinedPhantomFactor, color: COLORS.pool, label: '', tip: `Option Pool (diluted phantom).` });
+  if (state.advisorOn) postSeedSegs.push({ pct: state.advisor * combinedPhantomFactor, color: COLORS.advisor, label: '', tip: `Advisors (diluted phantom).` });
+  if (state.accelOn) postSeedSegs.push({ pct: state.accel * combinedPhantomFactor, color: COLORS.accel, label: '', tip: `Accelerator (diluted phantom).` });
+  postSeedSegs.push({ pct: state.preseedAmt / state.preseedCap * 100, color: COLORS.preseed, label: 'Pre-seed', tip: `Pre-seed SAFE implied ownership: ${fmtPct(d.preseedImpliedAtCap, 1)}.` });
+  postSeedSegs.push({ pct: state.seedAmt / state.seedCap * 100, color: COLORS.seed, label: 'Seed SAFE', tip: `Seed SAFE implied ownership: ${fmtPct(d.seedImpliedAtCap, 1)}.` });
+
+  // Post-Series A (real)
+  const finalSegs = [];
+  d.founders.forEach((f, i) => finalSegs.push({
+    pct: f.pctFinal, color: FOUNDER_COLORS[i % 4],
+    label: f.pctFinal >= 8 ? fmtPct(f.pctFinal, 0) : '',
+    tip: `${f.name}: ${fmtPct(f.pctFinal, 2)} post-Series A. Diluted from ${fmtPct(f.pctFormation, 1)} at formation.`
+  }));
+  finalSegs.push({ pct: d.poolFinalPct, color: COLORS.pool, label: d.poolFinalPct >= 5 ? 'Pool' : '', tip: `Option Pool: ${fmtPct(d.poolFinalPct, 2)} post-Series A.` });
+  if (state.advisorOn) finalSegs.push({ pct: d.advisorFinalPct, color: COLORS.advisor, label: '', tip: `Advisors: ${fmtPct(d.advisorFinalPct, 2)}.` });
+  if (state.accelOn) finalSegs.push({ pct: d.accelFinalPct, color: COLORS.accel, label: '', tip: `${state.accelName || 'Accelerator'}: ${fmtPct(d.accelFinalPct, 2)}.` });
+  finalSegs.push({ pct: d.preseedPct, color: COLORS.preseed, label: d.preseedPct >= 5 ? 'Pre-seed' : '', tip: `Pre-seed SAFE converted: ${fmtPct(d.preseedPct, 2)}.` });
+  finalSegs.push({ pct: d.seedPct, color: COLORS.seed, label: d.seedPct >= 5 ? 'Seed' : '', tip: `Seed SAFE converted: ${fmtPct(d.seedPct, 2)}.` });
+  finalSegs.push({ pct: d.seriesaPct, color: COLORS.seriesa, label: d.seriesaPct >= 5 ? 'Series A' : '', tip: `Series A investors: ${fmtPct(d.seriesaPct, 2)}.` });
+
+  const rows = [
+    { label: 'Formation', sub: 'All equity allocated', segs: formationSegs, founderPct: founderFormationTotal, phantom: false },
+    { label: 'Post-Pre-Seed', sub: 'SAFE outstanding', segs: preSegs, founderPct: founderFormationTotal * preseedPhantomFounderFactor, phantom: true },
+    { label: 'Post-Seed', sub: 'Two SAFEs outstanding', segs: postSeedSegs, founderPct: founderFormationTotal * combinedPhantomFactor, phantom: true },
+    { label: 'Post-Series A', sub: 'After conversion', segs: finalSegs, founderPct: founderFinalTotal, phantom: false }
+  ];
+
+  const html = rows.map(r => `
+    <div class="evo-row">
+      <div class="evo-label">${r.label}<span class="sub">${r.sub}${r.phantom ? ' · phantom view' : ''}</span></div>
+      <div>
+        ${buildBar(r.segs, r.phantom)}
+        ${r.phantom ? '<div class="phantom-note">Shares not yet issued — percentages are as-if-converted.</div>' : ''}
+      </div>
+      <div class="evo-founder-pct"><span class="lbl">Founders</span>${fmtPct(r.founderPct, 1)}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('evoBars').innerHTML = html;
+
+  // Dilution summary
+  const drop = founderFormationTotal - founderFinalTotal;
+  document.getElementById('dilutionSummary').innerHTML = `
+    Founder ownership moved from <strong>${fmtPct(founderFormationTotal, 1)}</strong> at formation to
+    <strong>${fmtPct(founderFinalTotal, 1)}</strong> post-Series A —
+    a total dilution of <strong>${fmtPct(drop, 1)}</strong> across four stages.
+  `;
+
+  // Legend
+  const legendItems = [
+    ...d.founders.map((f, i) => ({ color: FOUNDER_COLORS[i % 4], label: f.name })),
+    { color: COLORS.pool, label: 'Option Pool' },
+    ...(state.advisorOn ? [{ color: COLORS.advisor, label: 'Advisors' }] : []),
+    ...(state.accelOn ? [{ color: COLORS.accel, label: state.accelName || 'Accelerator' }] : []),
+    { color: COLORS.preseed, label: 'Pre-Seed SAFE' },
+    { color: COLORS.seed, label: 'Seed SAFE' },
+    { color: COLORS.seriesa, label: 'Series A' }
+  ];
+  document.getElementById('legend').innerHTML = legendItems.map(i =>
+    `<div class="legend-item"><span class="legend-swatch" style="background:${i.color};"></span>${i.label}</div>`
+  ).join('');
+}
+
+function renderCapTable(d) {
+  const rows = [];
+  let founderShareTotal = 0;
+  let founderPctTotal = 0;
+
+  d.founders.forEach((f, i) => {
+    const shares = Math.round(f.pctFinal / 100 * d.totalSharesPost);
+    founderShareTotal += shares;
+    founderPctTotal += f.pctFinal;
+    rows.push({
+      stakeholder: f.name,
+      color: FOUNDER_COLORS[i % 4],
+      shares,
+      pct: f.pctFinal,
+      notes: `Common stock, from formation (${fmtPct(f.pctFormation, 1)})`
+    });
+  });
+
+  rows.push({
+    stakeholder: 'Founders — Total',
+    color: null,
+    shares: founderShareTotal,
+    pct: founderPctTotal,
+    notes: '',
+    total: true
+  });
+
+  rows.push({
+    stakeholder: 'Option Pool',
+    color: COLORS.pool,
+    shares: Math.round(d.poolFinalPct / 100 * d.totalSharesPost),
+    pct: d.poolFinalPct,
+    notes: `${fmtPct(state.pool, 0)} reserved at formation`
+  });
+
+  if (state.advisorOn) rows.push({
+    stakeholder: 'Advisors',
+    color: COLORS.advisor,
+    shares: Math.round(d.advisorFinalPct / 100 * d.totalSharesPost),
+    pct: d.advisorFinalPct,
+    notes: `${fmtPct(state.advisor, 1)} granted at formation`
+  });
+
+  if (state.accelOn) rows.push({
+    stakeholder: state.accelName || 'Accelerator',
+    color: COLORS.accel,
+    shares: Math.round(d.accelFinalPct / 100 * d.totalSharesPost),
+    pct: d.accelFinalPct,
+    notes: `${fmtPct(state.accel, 1)} granted at formation`
+  });
+
+  rows.push({
+    stakeholder: 'Pre-Seed SAFE Holders',
+    color: COLORS.preseed,
+    shares: Math.round(d.preseedPct / 100 * d.totalSharesPost),
+    pct: d.preseedPct,
+    notes: `Converts at ${fmtMoney(d.preEffVal)} (${d.preEffVal === state.preseedCap ? 'cap' : 'discount'})`
+  });
+
+  rows.push({
+    stakeholder: 'Seed SAFE Holders',
+    color: COLORS.seed,
+    shares: Math.round(d.seedPct / 100 * d.totalSharesPost),
+    pct: d.seedPct,
+    notes: `Converts at ${fmtMoney(d.seedEffVal)} (${d.seedEffVal === state.seedCap ? 'cap' : 'discount'})`
+  });
+
+  rows.push({
+    stakeholder: 'Series A Investors',
+    color: COLORS.seriesa,
+    shares: Math.round(d.seriesaPct / 100 * d.totalSharesPost),
+    pct: d.seriesaPct,
+    notes: `Preferred stock at $${d.seriesaPrice.toFixed(2)} / share`
+  });
+
+  const totalShares = rows.filter(r => !r.total).reduce((s, r) => s + r.shares, 0);
+  const totalPct = rows.filter(r => !r.total).reduce((s, r) => s + r.pct, 0);
+
+  const html = rows.map(r => `
+    <tr class="${r.total ? 'founder-total' : ''}">
+      <td>${r.color ? `<span class="stake-dot" style="background:${r.color};"></span>` : ''}${escapeHtml(r.stakeholder)}</td>
+      <td>${fmtShares(r.shares)}</td>
+      <td>${fmtPct(r.pct, 2)}</td>
+      <td>${escapeHtml(r.notes)}</td>
+    </tr>
+  `).join('') + `
+    <tr class="total">
+      <td>Total</td>
+      <td>${fmtShares(totalShares)}</td>
+      <td>${fmtPct(totalPct, 2)}</td>
+      <td>Fully diluted post-Series A</td>
+    </tr>
+  `;
+  document.getElementById('capTable').innerHTML = html;
+}
+
+function renderAll() {
+  renderSliderValues();
+  renderFormationSummary();
+  updateFounderValues();
+  const d = calcDilution();
+  renderCalculated(d);
+  renderStageCards(d);
+  renderEvo(d);
+  renderCapTable(d);
+}
+
+// Called during active interactions (sliders, name inputs) where we don't rebuild the founder list.
+function renderDownstream() {
+  renderSliderValues();
+  renderFormationSummary();
+  updateFounderValues(getActiveDraggingFounderIdx());
+  const d = calcDilution();
+  renderCalculated(d);
+  renderStageCards(d);
+  renderEvo(d);
+  renderCapTable(d);
+}
+
+function getActiveDraggingFounderIdx() {
+  const active = document.activeElement;
+  for (let i = 0; i < founderEls.length; i++) {
+    if (founderEls[i] && founderEls[i].shareSlider === active) return i;
+  }
+  return -1;
+}
+
+// ================ EVENTS ================
+function bindSlider(id, key, transform = v => +v) {
+  const el = document.getElementById(id);
+  el.addEventListener('input', e => {
+    state[key] = transform(e.target.value);
+    renderAll();
+  });
+}
+
+function applyState(s) {
+  state = JSON.parse(JSON.stringify(s));
+  // Sync DOM slider values
+  document.getElementById('pool').value = state.pool;
+  document.getElementById('advisor').value = state.advisor;
+  document.getElementById('accel').value = state.accel;
+  document.getElementById('accelName').value = state.accelName || '';
+  document.getElementById('preseedAmt').value = state.preseedAmt;
+  document.getElementById('preseedCap').value = state.preseedCap;
+  document.getElementById('preseedDisc').value = state.preseedDisc;
+  document.getElementById('seedAmt').value = state.seedAmt;
+  document.getElementById('seedCap').value = state.seedCap;
+  document.getElementById('seedDisc').value = state.seedDisc;
+  document.getElementById('seriesaAmt').value = state.seriesaAmt;
+  document.getElementById('seriesaPost').value = state.seriesaPost;
+  buildFounderList();
+  renderAll();
+}
+
+function init() {
+  buildFounderList();
+
+  bindSlider('pool', 'pool');
+  bindSlider('advisor', 'advisor');
+  bindSlider('accel', 'accel');
+  bindSlider('preseedAmt', 'preseedAmt');
+  bindSlider('preseedCap', 'preseedCap');
+  bindSlider('preseedDisc', 'preseedDisc');
+  bindSlider('seedAmt', 'seedAmt');
+  bindSlider('seedCap', 'seedCap');
+  bindSlider('seedDisc', 'seedDisc');
+  bindSlider('seriesaAmt', 'seriesaAmt');
+  bindSlider('seriesaPost', 'seriesaPost');
+
+  document.getElementById('accelName').addEventListener('input', e => {
+    state.accelName = e.target.value;
+    renderAll();
+  });
+
+  document.getElementById('advisorToggle').addEventListener('click', () => {
+    state.advisorOn = !state.advisorOn;
+    renderAll();
+  });
+  document.getElementById('accelToggle').addEventListener('click', () => {
+    state.accelOn = !state.accelOn;
+    renderAll();
+  });
+
+  document.getElementById('addFounder').addEventListener('click', () => {
+    if (state.founders.length >= 4) return;
+    const n = state.founders.length;
+    const newShare = 100 / (n + 1);
+    const scale = (100 - newShare) / 100;
+    state.founders.forEach(f => f.poolShare = f.poolShare * scale);
+    state.founders.push({ name: 'Founder ' + (n + 1), poolShare: newShare });
+    buildFounderList();
+    renderAll();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    applyState(DEFAULT_STATE);
+    document.getElementById('scenario').value = 'default';
+  });
+
+  document.getElementById('scenario').addEventListener('change', e => {
+    const v = e.target.value;
+    if (SCENARIOS[v]) applyState(SCENARIOS[v]);
+  });
+
+  document.getElementById('glossaryToggle').addEventListener('click', () => {
+    document.getElementById('glossaryToggle').classList.toggle('open');
+    document.getElementById('glossary').classList.toggle('open');
+  });
+
+  renderAll();
+}
+
+init();
+</script>
+
+</body>
+</html>
