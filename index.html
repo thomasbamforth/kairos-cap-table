@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <style>
   :root {
     --cream: #F5F2EC;
@@ -916,6 +917,7 @@
       </select>
     </div>
     <button class="btn-secondary" id="resetBtn">Reset to Defaults</button>
+    <button class="btn-secondary" id="exportBtn" style="background:#1A1A1A; color:#F5F2EC; border-color:#1A1A1A;">↓ Export to Excel</button>
   </div>
 </section>
 
@@ -1837,6 +1839,203 @@ function applyState(s) {
   renderAll();
 }
 
+// ================ EXCEL EXPORT ================
+const XS = {
+  title: { font: { name: 'Calibri', sz: 16, bold: true, color: { rgb: '1A1A1A' } }, alignment: { vertical: 'center' } },
+  subtitle: { font: { name: 'Calibri', sz: 10, italic: true, color: { rgb: '8B8680' } } },
+  eyebrow: { font: { name: 'Calibri', sz: 9, bold: true, color: { rgb: 'B5622A' } }, alignment: { vertical: 'center' } },
+  sectionHeader: { font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: 'B5622A' } }, fill: { fgColor: { rgb: 'F5F2EC' } }, alignment: { vertical: 'center' }, border: { bottom: { style: 'medium', color: { rgb: '1A1A1A' } } } },
+  columnHeader: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '1A1A1A' } }, fill: { fgColor: { rgb: 'E8E4DC' } }, alignment: { vertical: 'center' }, border: { bottom: { style: 'thin', color: { rgb: '1A1A1A' } } } },
+  cell: { font: { name: 'Calibri', sz: 10, color: { rgb: '1A1A1A' } }, alignment: { vertical: 'center', wrapText: true } },
+  cellNum: { font: { name: 'Calibri', sz: 10, color: { rgb: '1A1A1A' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '#,##0' },
+  cellPct: { font: { name: 'Calibri', sz: 10, color: { rgb: '1A1A1A' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '0.00%' },
+  cellMoney: { font: { name: 'Calibri', sz: 10, color: { rgb: '1A1A1A' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '"$"#,##0' },
+  cellMoneyFine: { font: { name: 'Calibri', sz: 10, color: { rgb: '1A1A1A' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '"$"#,##0.00' },
+  founderRow: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '2D6A4F' } }, fill: { fgColor: { rgb: 'EAF3ED' } }, alignment: { vertical: 'center' } },
+  founderRowNum: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '2D6A4F' } }, fill: { fgColor: { rgb: 'EAF3ED' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '#,##0' },
+  founderRowPct: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '2D6A4F' } }, fill: { fgColor: { rgb: 'EAF3ED' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '0.00%' },
+  totalRow: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '1A1A1A' } }, fill: { fgColor: { rgb: 'E8E4DC' } }, alignment: { vertical: 'center' }, border: { top: { style: 'medium', color: { rgb: '1A1A1A' } } } },
+  totalRowNum: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '1A1A1A' } }, fill: { fgColor: { rgb: 'E8E4DC' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '#,##0', border: { top: { style: 'medium', color: { rgb: '1A1A1A' } } } },
+  totalRowPct: { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '1A1A1A' } }, fill: { fgColor: { rgb: 'E8E4DC' } }, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '0.00%', border: { top: { style: 'medium', color: { rgb: '1A1A1A' } } } },
+  note: { font: { name: 'Calibri', sz: 10, italic: true, color: { rgb: '4A4A48' } }, alignment: { vertical: 'center', wrapText: true } }
+};
+
+function newSheetBuilder() {
+  const rows = [];
+  const styleMap = {};
+  const enc = (c, r) => XLSX.utils.encode_cell({ r, c });
+  const addRow = (cells, spec) => {
+    const r = rows.length;
+    rows.push(cells);
+    if (spec) {
+      if (spec.allStyle) cells.forEach((_, c) => { styleMap[enc(c, r)] = spec.allStyle; });
+      if (spec.cellStyles) spec.cellStyles.forEach((s, c) => { if (s) styleMap[enc(c, r)] = s; });
+    }
+  };
+  const finalize = (colWidths, merges) => {
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    if (colWidths) ws['!cols'] = colWidths.map(w => ({ wch: w }));
+    if (merges) ws['!merges'] = merges;
+    Object.entries(styleMap).forEach(([addr, s]) => {
+      if (!ws[addr]) ws[addr] = { v: '', t: 's' };
+      ws[addr].s = s;
+    });
+    return ws;
+  };
+  return { addRow, finalize };
+}
+
+function buildInputsWS(d) {
+  const { addRow, finalize } = newSheetBuilder();
+  const advisorPct = state.advisorOn ? state.advisor / 100 : null;
+  const accelPct = state.accelOn ? state.accel / 100 : null;
+
+  addRow(['Kairos Cap Table Navigator'], { cellStyles: [XS.title] });
+  addRow([`Exported ${new Date().toLocaleString()}`], { cellStyles: [XS.subtitle] });
+  addRow([]);
+
+  addRow(['FORMATION', '', ''], { allStyle: XS.sectionHeader });
+  addRow(['Parameter', 'Value', 'Notes'], { allStyle: XS.columnHeader });
+  addRow(['Founder Pool Size', d.formation.founderPoolSize / 100, '100% minus option pool, advisors, and accelerator'], { cellStyles: [XS.cell, XS.cellPct, XS.cell] });
+  addRow(['Option Pool', state.pool / 100, 'Reserved for future employee grants'], { cellStyles: [XS.cell, XS.cellPct, XS.cell] });
+  addRow(['Advisors', advisorPct !== null ? advisorPct : 'Off', advisorPct !== null ? 'Granted to strategic advisors' : 'Not enabled'], { cellStyles: [XS.cell, advisorPct !== null ? XS.cellPct : XS.cell, XS.cell] });
+  addRow(['Accelerator / Other', accelPct !== null ? accelPct : 'Off', state.accelName || (accelPct !== null ? 'Accelerator equity' : 'Not enabled')], { cellStyles: [XS.cell, accelPct !== null ? XS.cellPct : XS.cell, XS.cell] });
+  addRow([]);
+
+  addRow(['FOUNDERS', '', '', ''], { allStyle: XS.sectionHeader });
+  addRow(['Name', 'Pool Share', 'Company %', 'Shares (baseline)'], { allStyle: XS.columnHeader });
+  d.founders.forEach(f => {
+    addRow([f.name, f.poolShare / 100, f.pctFormation / 100, Math.round(f.pctFormation / 100 * TOTAL_AUTHORIZED)],
+      { cellStyles: [XS.cell, XS.cellPct, XS.cellPct, XS.cellNum] });
+  });
+  addRow([]);
+
+  addRow(['PRE-SEED SAFE', ''], { allStyle: XS.sectionHeader });
+  addRow(['Parameter', 'Value'], { allStyle: XS.columnHeader });
+  addRow(['Amount Raised', state.preseedAmt], { cellStyles: [XS.cell, XS.cellMoney] });
+  addRow(['Valuation Cap', state.preseedCap], { cellStyles: [XS.cell, XS.cellMoney] });
+  addRow(['Discount Rate', state.preseedDisc / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  addRow(['Implied Ownership at Cap', d.preseedImpliedAtCap / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  addRow([]);
+
+  addRow(['SEED SAFE', ''], { allStyle: XS.sectionHeader });
+  addRow(['Parameter', 'Value'], { allStyle: XS.columnHeader });
+  addRow(['Amount Raised', state.seedAmt], { cellStyles: [XS.cell, XS.cellMoney] });
+  addRow(['Valuation Cap', state.seedCap], { cellStyles: [XS.cell, XS.cellMoney] });
+  addRow(['Discount Rate', state.seedDisc / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  addRow(['Implied Ownership at Cap', d.seedImpliedAtCap / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  addRow([]);
+
+  addRow(['SERIES A — PRICED ROUND', ''], { allStyle: XS.sectionHeader });
+  addRow(['Parameter', 'Value'], { allStyle: XS.columnHeader });
+  addRow(['Amount Raised', state.seriesaAmt], { cellStyles: [XS.cell, XS.cellMoney] });
+  addRow(['Post-Money Valuation', state.seriesaPost], { cellStyles: [XS.cell, XS.cellMoney] });
+  addRow(['Pre-Money Valuation', d.seriesaPreMoney], { cellStyles: [XS.cell, XS.cellMoney] });
+  addRow(['Investor Ownership %', d.seriesaPct / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  addRow(['Series A Share Price (est.)', d.seriesaPrice], { cellStyles: [XS.cell, XS.cellMoneyFine] });
+  addRow(['Total Shares Post-Series A', Math.round(d.totalSharesPost)], { cellStyles: [XS.cell, XS.cellNum] });
+  addRow(['Baseline Authorized Shares', TOTAL_AUTHORIZED], { cellStyles: [XS.cell, XS.cellNum] });
+
+  return finalize([34, 18, 48, 18], [{ s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }]);
+}
+
+function buildCapTableWS(d) {
+  const { addRow, finalize } = newSheetBuilder();
+
+  addRow(['Kairos · Cap Table at Series A'], { cellStyles: [XS.title] });
+  addRow([`Exported ${new Date().toLocaleString()}`], { cellStyles: [XS.subtitle] });
+  addRow([]);
+
+  addRow(['Stakeholder', 'Shares', '% Ownership', 'Notes'], { allStyle: XS.columnHeader });
+
+  let founderShares = 0, founderPct = 0, totalShares = 0, totalPct = 0;
+
+  d.founders.forEach(f => {
+    const shares = Math.round(f.pctFinal / 100 * d.totalSharesPost);
+    addRow([f.name, shares, f.pctFinal / 100, `Common stock, from formation (${f.pctFormation.toFixed(1)}%)`],
+      { cellStyles: [XS.cell, XS.cellNum, XS.cellPct, XS.cell] });
+    founderShares += shares;
+    founderPct += f.pctFinal;
+    totalShares += shares;
+    totalPct += f.pctFinal;
+  });
+
+  addRow(['Founders — Total', founderShares, founderPct / 100, ''],
+    { cellStyles: [XS.founderRow, XS.founderRowNum, XS.founderRowPct, XS.founderRow] });
+
+  const addStake = (name, pct, note) => {
+    const shares = Math.round(pct / 100 * d.totalSharesPost);
+    addRow([name, shares, pct / 100, note],
+      { cellStyles: [XS.cell, XS.cellNum, XS.cellPct, XS.cell] });
+    totalShares += shares;
+    totalPct += pct;
+  };
+
+  addStake('Option Pool', d.poolFinalPct, `${state.pool}% reserved at formation`);
+  if (state.advisorOn) addStake('Advisors', d.advisorFinalPct, `${state.advisor}% granted at formation`);
+  if (state.accelOn) addStake(state.accelName || 'Accelerator', d.accelFinalPct, `${state.accel}% granted at formation`);
+  addStake('Pre-Seed SAFE Holders', d.preseedPct, `Converts at ${fmtMoney(d.preEffVal)} (${d.preEffVal === state.preseedCap ? 'cap' : 'discount'})`);
+  addStake('Seed SAFE Holders', d.seedPct, `Converts at ${fmtMoney(d.seedEffVal)} (${d.seedEffVal === state.seedCap ? 'cap' : 'discount'})`);
+  addStake('Series A Investors', d.seriesaPct, `Preferred stock at $${d.seriesaPrice.toFixed(2)} / share`);
+
+  addRow(['Total', totalShares, totalPct / 100, 'Fully diluted post-Series A'],
+    { cellStyles: [XS.totalRow, XS.totalRowNum, XS.totalRowPct, XS.totalRow] });
+
+  return finalize([34, 16, 16, 50]);
+}
+
+function buildEvolutionWS(d) {
+  const { addRow, finalize } = newSheetBuilder();
+
+  const founderFormPct = d.founders.reduce((s, f) => s + f.pctFormation, 0);
+  const founderFinalPct = d.founders.reduce((s, f) => s + f.pctFinal, 0);
+  const preFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap));
+  const combinedFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap) - (state.seedAmt / state.seedCap));
+  const advisorFormation = state.advisorOn ? state.advisor : 0;
+  const accelFormation = state.accelOn ? state.accel : 0;
+
+  addRow(['Kairos · Ownership Evolution'], { cellStyles: [XS.title] });
+  addRow([`Exported ${new Date().toLocaleString()}`], { cellStyles: [XS.subtitle] });
+  addRow([]);
+
+  addRow(['Stage', 'Founders', 'Option Pool', 'Advisors', 'Accelerator', 'Pre-Seed SAFE', 'Seed SAFE', 'Series A'], { allStyle: XS.columnHeader });
+
+  const pctStyles = [XS.cell, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct];
+
+  addRow(['Formation', founderFormPct / 100, state.pool / 100, advisorFormation / 100, accelFormation / 100, 0, 0, 0], { cellStyles: pctStyles });
+  addRow(['Post-Pre-Seed (phantom)', (founderFormPct * preFactor) / 100, (state.pool * preFactor) / 100, (advisorFormation * preFactor) / 100, (accelFormation * preFactor) / 100, state.preseedAmt / state.preseedCap, 0, 0], { cellStyles: pctStyles });
+  addRow(['Post-Seed (phantom)', (founderFormPct * combinedFactor) / 100, (state.pool * combinedFactor) / 100, (advisorFormation * combinedFactor) / 100, (accelFormation * combinedFactor) / 100, state.preseedAmt / state.preseedCap, state.seedAmt / state.seedCap, 0], { cellStyles: pctStyles });
+  addRow(['Post-Series A', founderFinalPct / 100, d.poolFinalPct / 100, d.advisorFinalPct / 100, d.accelFinalPct / 100, d.preseedPct / 100, d.seedPct / 100, d.seriesaPct / 100],
+    { cellStyles: [XS.totalRow, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct] });
+
+  addRow([]);
+  addRow(['Summary'], { cellStyles: [XS.sectionHeader] });
+  addRow([`Founder ownership went from ${founderFormPct.toFixed(1)}% at formation to ${founderFinalPct.toFixed(1)}% post-Series A (total dilution ${(founderFormPct - founderFinalPct).toFixed(1)}%).`], { cellStyles: [XS.note] });
+  addRow(['Phantom rows show the as-if-converted view before the priced round. No shares are actually issued until Series A conversion.'], { cellStyles: [XS.note] });
+
+  return finalize([26, 13, 13, 13, 13, 15, 15, 13]);
+}
+
+function exportExcel() {
+  if (typeof XLSX === 'undefined') {
+    alert('Export library failed to load. Check your internet connection and try again.');
+    return;
+  }
+  const d = calcDilution();
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, buildInputsWS(d), 'Inputs & Terms');
+  XLSX.utils.book_append_sheet(wb, buildCapTableWS(d), 'Cap Table');
+  XLSX.utils.book_append_sheet(wb, buildEvolutionWS(d), 'Ownership Evolution');
+  wb.Props = {
+    Title: 'Kairos Cap Table Navigator',
+    Subject: 'Equity Dilution Snapshot',
+    Author: 'Kairos',
+    CreatedDate: new Date()
+  };
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+  XLSX.writeFile(wb, `kairos-cap-table-${stamp}.xlsx`);
+}
+
 function init() {
   buildFounderList();
 
@@ -1881,6 +2080,8 @@ function init() {
     applyState(DEFAULT_STATE);
     document.getElementById('scenario').value = 'default';
   });
+
+  document.getElementById('exportBtn').addEventListener('click', exportExcel);
 
   document.getElementById('scenario').addEventListener('change', e => {
     const v = e.target.value;
