@@ -550,6 +550,148 @@
   .toggle.on { background: var(--ink); }
   .toggle.on::after { left: 19px; }
 
+  /* Top-level stage tabs (Formation / Pre-Seed / Seed / Series A) */
+  .stage-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin: 0 0 18px;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+  }
+  .stage-tab {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px 6px 8px;
+    border-radius: 7px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+    transition: background 150ms ease, color 150ms ease;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .stage-tab:hover { color: var(--ink-soft); background: rgba(19, 41, 75, 0.04); }
+  .stage-tab .st-num {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 3px;
+  }
+  .stage-tab .st-name {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .stage-tab.active {
+    background: var(--navy);
+    color: var(--cream);
+  }
+  .stage-tab.active .st-num { opacity: 0.85; color: var(--carolina); }
+  .stage-card-wrap { display: none; }
+  .stage-card-wrap.active { display: block; }
+
+  /* Stage-02 sub-tabs (SAFE / Loan) */
+  .subtabs {
+    display: flex;
+    gap: 4px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0 0 16px;
+  }
+  .subtab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    transition: background 150ms ease, color 150ms ease;
+  }
+  .subtab:hover { color: var(--ink-soft); }
+  .subtab.active {
+    background: var(--navy);
+    color: var(--cream);
+  }
+  .subtab .off-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.35;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .subtab.enabled .off-dot { background: var(--green); opacity: 1; }
+  .subpanel { display: none; }
+  .subpanel.active { display: block; }
+  .subpanel.off .below-toggle { opacity: 0.45; pointer-events: none; }
+
+  /* Loan summary card (NCBiotech-style) */
+  .loan-summary-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 22px 18px;
+    margin: 14px 0 18px;
+  }
+  .loan-headline {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .loan-headline .big {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .loan-headline .caption {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--carolina);
+    margin-top: 10px;
+    font-weight: 500;
+  }
+  .loan-summary-card hr.ls-divide {
+    border: none;
+    border-top: 1px dashed var(--border-strong);
+    margin: 14px 0 10px;
+  }
+  .loan-rows { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+  .loan-rows .lr {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+  .loan-rows .lr .k { color: var(--ink-soft); }
+  .loan-rows .lr .v { color: var(--carolina); font-weight: 500; }
+  .loan-rows .lr.repayment .v { color: var(--preseed); font-weight: 600; }
+  .loan-rows .lr.dilution .v { color: var(--green); }
+  .loan-rows .lr.retain .v { color: var(--carolina); }
+
   /* Validation */
   .validation {
     display: flex;
@@ -989,7 +1131,28 @@
   <!-- LEFT PANEL -->
   <aside class="controls">
 
+    <!-- STAGE TABS -->
+    <div class="stage-tabs" role="tablist" aria-label="Funding stages">
+      <button class="stage-tab active" role="tab" data-stage="formation" aria-selected="true">
+        <span class="st-num">Stage 01</span>
+        <span class="st-name">Formation</span>
+      </button>
+      <button class="stage-tab" role="tab" data-stage="preseed" aria-selected="false">
+        <span class="st-num">Stage 02</span>
+        <span class="st-name">Pre-Seed</span>
+      </button>
+      <button class="stage-tab" role="tab" data-stage="seed" aria-selected="false">
+        <span class="st-num">Stage 03</span>
+        <span class="st-name">Seed SAFE</span>
+      </button>
+      <button class="stage-tab" role="tab" data-stage="seriesa" aria-selected="false">
+        <span class="st-num">Stage 04</span>
+        <span class="st-name">Series A</span>
+      </button>
+    </div>
+
     <!-- FORMATION -->
+    <div class="stage-card-wrap active" data-stage="formation">
     <div class="card">
       <div class="stage-sub">Stage 01</div>
       <h3>Formation</h3>
@@ -1077,49 +1240,145 @@
         </div>
       </div>
     </div>
+    </div><!-- /stage-card-wrap formation -->
 
-    <!-- PRE-SEED SAFE -->
+    <!-- PRE-SEED CAPITAL (SAFE / Loan) -->
+    <div class="stage-card-wrap" data-stage="preseed">
     <div class="card">
       <div class="stage-sub">Stage 02</div>
-      <h3>Pre-Seed SAFE</h3>
+      <h3>Pre-Seed Capital</h3>
       <hr class="divide">
 
-      <div class="status"><span class="dot"></span>No shares issued yet</div>
+      <div class="status" id="preseedStatus"><span class="dot"></span>No shares issued yet</div>
 
-      <div class="slider-row">
-        <div class="row-head">
-          <span class="name">Amount Raised</span>
-          <span class="val" id="preseedAmtVal">$500K</span>
-        </div>
-        <input type="range" id="preseedAmt" min="100000" max="2000000" step="25000" value="500000">
-        <div class="bench">Pre-seed rounds in digital health: $200K–$1.5M median (Rock Health 2023)</div>
+      <div class="subtabs" role="tablist" aria-label="Pre-seed instrument">
+        <button class="subtab active enabled" role="tab" data-sub="safe" aria-selected="true">
+          <span class="off-dot"></span>SAFE Note
+        </button>
+        <button class="subtab" role="tab" data-sub="loan" aria-selected="false">
+          <span class="off-dot"></span>Loan
+        </button>
       </div>
 
-      <div class="slider-row">
-        <div class="row-head">
-          <span class="name">Valuation Cap</span>
-          <span class="val" id="preseedCapVal">$6M</span>
+      <!-- SAFE sub-panel -->
+      <div class="subpanel active" data-sub="safe" role="tabpanel">
+        <div class="toggle-row">
+          <span class="name mono" style="font-size:12px;">SAFE Note Enabled</span>
+          <div class="toggle on" id="preseedSafeToggle"></div>
         </div>
-        <input type="range" id="preseedCap" min="3000000" max="15000000" step="250000" value="6000000">
-        <div class="bench">Pre-seed caps in digital health: $4M–$10M typical (Kauffman Fellows 2022)</div>
+        <div class="below-toggle" id="preseedSafeBody">
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Amount Raised</span>
+              <span class="val" id="preseedAmtVal">$500K</span>
+            </div>
+            <input type="range" id="preseedAmt" min="100000" max="2000000" step="25000" value="500000">
+            <div class="bench">Pre-seed rounds in digital health: $200K–$1.5M median (Rock Health 2023)</div>
+          </div>
+
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Valuation Cap</span>
+              <span class="val" id="preseedCapVal">$6M</span>
+            </div>
+            <input type="range" id="preseedCap" min="3000000" max="15000000" step="250000" value="6000000">
+            <div class="bench">Pre-seed caps in digital health: $4M–$10M typical (Kauffman Fellows 2022)</div>
+          </div>
+
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Discount Rate</span>
+              <span class="val" id="preseedDiscVal">20%</span>
+            </div>
+            <input type="range" id="preseedDisc" min="10" max="30" step="5" value="20">
+            <div class="bench">Standard SAFE discount: 15–25% (YC Post-Money SAFE template)</div>
+          </div>
+
+          <div class="calc-field">
+            <span class="k">Implied Ownership at Cap</span>
+            <span class="v" id="preseedImplied">8.33%</span>
+          </div>
+        </div>
       </div>
 
-      <div class="slider-row">
-        <div class="row-head">
-          <span class="name">Discount Rate</span>
-          <span class="val" id="preseedDiscVal">20%</span>
+      <!-- LOAN sub-panel -->
+      <div class="subpanel off" data-sub="loan" role="tabpanel">
+        <div class="toggle-row">
+          <span class="name mono" style="font-size:12px;">Loan Enabled</span>
+          <div class="toggle" id="preseedLoanToggle"></div>
         </div>
-        <input type="range" id="preseedDisc" min="10" max="30" step="5" value="20">
-        <div class="bench">Standard SAFE discount: 15–25% (YC Post-Money SAFE template)</div>
-      </div>
+        <div class="below-toggle" id="preseedLoanBody">
+          <div class="loan-summary-card">
+            <div class="loan-headline">
+              <div class="big" id="loanOwnPct">0.9%</div>
+              <div class="caption">Lender Ownership (Warrants + Interest)</div>
+            </div>
+            <hr class="ls-divide">
+            <div class="loan-rows">
+              <div class="lr"><span class="k">Loan amount</span><span class="v" id="loanAmtView">$250,000</span></div>
+              <div class="lr"><span class="k">Interest rate</span><span class="v" id="loanRateView">6.50% fixed (Prime+2%)</span></div>
+              <div class="lr"><span class="k">Warrant shares (<span id="loanWarrantPctView">1%</span> FD)</span><span class="v" id="loanWarrantSharesView">100,000 @ $0.50</span></div>
+              <div class="lr"><span class="k">Accrued interest (<span id="loanInterestYrsView">2yr</span>)</span><span class="v" id="loanAccruedView">$32,500</span></div>
+              <div class="lr"><span class="k">Interest conv. shares</span><span class="v" id="loanConvSharesView">11,607 @ $2.80</span></div>
+              <hr class="ls-divide">
+              <div class="lr repayment"><span class="k">Repayment at <span id="loanTermYrsView">5</span> years</span><span class="v" id="loanRepayView">$282,500</span></div>
+              <hr class="ls-divide">
+              <div class="lr dilution"><span class="k">Total founder dilution</span><span class="v" id="loanFounderDilView">14.4%</span></div>
+              <div class="lr retain"><span class="k">Founders retain</span><span class="v" id="loanFounderRetainView">70.6%</span></div>
+            </div>
+          </div>
 
-      <div class="calc-field">
-        <span class="k">Implied Ownership at Cap</span>
-        <span class="v" id="preseedImplied">8.33%</span>
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Loan Amount</span>
+              <span class="val" id="loanAmtVal">$250K</span>
+            </div>
+            <input type="range" id="loanAmt" min="50000" max="1000000" step="25000" value="250000">
+            <div class="bench">NCBiotech Company Inception Loans: $50K–$250K typical at early stage</div>
+          </div>
+
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Annual Interest Rate</span>
+              <span class="val" id="loanRateVal">6.5%</span>
+            </div>
+            <input type="range" id="loanRate" min="2" max="10" step="0.25" value="6.5">
+            <div class="bench">Typical: Prime + 2% fixed at origination</div>
+          </div>
+
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Warrant Coverage (% FD)</span>
+              <span class="val" id="loanWarrantPctVal">1.00%</span>
+            </div>
+            <input type="range" id="loanWarrantPct" min="0.25" max="3" step="0.25" value="1">
+            <div class="bench">NCBiotech warrants: 0.5%–2% of fully diluted shares</div>
+          </div>
+
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Loan Term</span>
+              <span class="val" id="loanTermYrsVal">5 yrs</span>
+            </div>
+            <input type="range" id="loanTermYrs" min="2" max="7" step="1" value="5">
+            <div class="bench">Typical term: 3–5 years before repayment or conversion</div>
+          </div>
+
+          <div class="slider-row">
+            <div class="row-head">
+              <span class="name">Interest Accrual Period</span>
+              <span class="val" id="loanInterestYrsVal">2 yrs</span>
+            </div>
+            <input type="range" id="loanInterestYrs" min="1" max="5" step="1" value="2">
+            <div class="bench">Interest accrues until conversion event (typically at Series A)</div>
+          </div>
+        </div>
       </div>
     </div>
+    </div><!-- /stage-card-wrap preseed -->
 
     <!-- SEED SAFE -->
+    <div class="stage-card-wrap" data-stage="seed">
     <div class="card">
       <div class="stage-sub">Stage 03</div>
       <h3>Seed SAFE</h3>
@@ -1159,8 +1418,10 @@
         <span class="v" id="seedImplied">12.5%</span>
       </div>
     </div>
+    </div><!-- /stage-card-wrap seed -->
 
     <!-- SERIES A -->
+    <div class="stage-card-wrap" data-stage="seriesa">
     <div class="card">
       <div class="stage-sub">Stage 04</div>
       <h3>Series A — Priced Round</h3>
@@ -1203,6 +1464,7 @@
         <span class="v" id="seriesaPrice">$2.14</span>
       </div>
     </div>
+    </div><!-- /stage-card-wrap seriesa -->
 
   </aside>
 
@@ -1296,9 +1558,18 @@ const DEFAULT_STATE = {
   accelOn: false,
   accel: 6,
   accelName: '',
+  activeStage: 'formation',
+  preseedMode: 'safe',
+  preseedSafeOn: true,
   preseedAmt: 500000,
   preseedCap: 6000000,
   preseedDisc: 20,
+  preseedLoanOn: false,
+  loanAmt: 250000,
+  loanRate: 6.5,
+  loanWarrantPct: 1.0,
+  loanTermYrs: 5,
+  loanInterestYrs: 2,
   seedAmt: 1500000,
   seedCap: 12000000,
   seedDisc: 15,
@@ -1311,21 +1582,30 @@ const SCENARIOS = {
   lean: {
     founders: [{ name: 'Founder 1', poolShare: 50 }, { name: 'Founder 2', poolShare: 50 }],
     pool: 5, advisorOn: false, advisor: 2, accelOn: false, accel: 6, accelName: '',
+    preseedMode: 'safe', preseedSafeOn: true,
     preseedAmt: 250000, preseedCap: 8000000, preseedDisc: 20,
+    preseedLoanOn: false,
+    loanAmt: 250000, loanRate: 6.5, loanWarrantPct: 1.0, loanTermYrs: 5, loanInterestYrs: 2,
     seedAmt: 1000000, seedCap: 15000000, seedDisc: 15,
     seriesaAmt: 8000000, seriesaPost: 40000000
   },
   wellfunded: {
     founders: [{ name: 'Founder 1', poolShare: 45 }, { name: 'Founder 2', poolShare: 40 }, { name: 'Founder 3', poolShare: 15 }],
     pool: 15, advisorOn: true, advisor: 2, accelOn: true, accel: 6, accelName: 'Y Combinator',
+    preseedMode: 'safe', preseedSafeOn: true,
     preseedAmt: 1000000, preseedCap: 10000000, preseedDisc: 20,
+    preseedLoanOn: false,
+    loanAmt: 250000, loanRate: 6.5, loanWarrantPct: 1.0, loanTermYrs: 5, loanInterestYrs: 2,
     seedAmt: 3000000, seedCap: 20000000, seedDisc: 15,
     seriesaAmt: 15000000, seriesaPost: 50000000
   },
   heavy: {
     founders: [{ name: 'Founder 1', poolShare: 50 }, { name: 'Founder 2', poolShare: 50 }],
     pool: 20, advisorOn: true, advisor: 4, accelOn: false, accel: 6, accelName: '',
+    preseedMode: 'safe', preseedSafeOn: true,
     preseedAmt: 1500000, preseedCap: 5000000, preseedDisc: 20,
+    preseedLoanOn: false,
+    loanAmt: 250000, loanRate: 6.5, loanWarrantPct: 1.0, loanTermYrs: 5, loanInterestYrs: 2,
     seedAmt: 4000000, seedCap: 10000000, seedDisc: 20,
     seriesaAmt: 12000000, seriesaPost: 30000000
   }
@@ -1340,7 +1620,8 @@ const COLORS = {
   accel: '#5E8BA8',
   preseed: '#B5622A',
   seed: '#7FB3D5',
-  seriesa: '#7A1A2E'
+  seriesa: '#7A1A2E',
+  lender: '#2D6A4F'
 };
 
 const TOTAL_AUTHORIZED = 10_000_000;
@@ -1392,11 +1673,18 @@ function calcDilution() {
   const preEffVal = Math.min(state.preseedCap, state.seriesaPost * (1 - state.preseedDisc / 100));
   const seedEffVal = Math.min(state.seedCap, state.seriesaPost * (1 - state.seedDisc / 100));
 
-  const preseedPct = state.preseedAmt / preEffVal;
+  const preseedPctRaw = state.preseedAmt / preEffVal;
+  const preseedPct = state.preseedSafeOn ? preseedPctRaw : 0;
   const seedPct = state.seedAmt / seedEffVal;
   const seriesaPct = state.seriesaAmt / state.seriesaPost;
 
-  const newInvestorTotal = preseedPct + seedPct + seriesaPct;
+  // Loan math (NCBiotech-style): warrant slice + interest-conversion slice of final cap
+  const accruedInterest = state.loanAmt * (state.loanRate / 100) * state.loanInterestYrs;
+  const warrantOwnFraction = state.preseedLoanOn ? (state.loanWarrantPct / 100) : 0;
+  const interestOwnFraction = state.preseedLoanOn ? (accruedInterest / state.seriesaPost) : 0;
+  const lenderFraction = warrantOwnFraction + interestOwnFraction;
+
+  const newInvestorTotal = preseedPct + seedPct + seriesaPct + lenderFraction;
   const existingShare = Math.max(0, 1 - newInvestorTotal);
 
   const formationFactor = f.total > 0 ? existingShare / (f.total / 100) : 0;
@@ -1419,6 +1707,12 @@ function calcDilution() {
   const seriesaPrice = state.seriesaPost / totalSharesPost;
   const seriesaPreMoney = state.seriesaPost - state.seriesaAmt;
 
+  // Derived loan numbers for display
+  const warrantShares = warrantOwnFraction * totalSharesPost;
+  const interestConvShares = seriesaPrice > 0 ? accruedInterest / seriesaPrice : 0;
+  const warrantStrike = Math.max(0.10, seriesaPrice * 0.18); // illustrative low strike
+  const repayment = state.loanAmt + accruedInterest;
+
   return {
     formation: f,
     founders,
@@ -1429,6 +1723,7 @@ function calcDilution() {
     accelFormationPct: state.accelOn ? state.accel : 0,
     accelFinalPct: accelFinal,
     preseedPct: preseedPct * 100,
+    preseedPctRaw: preseedPctRaw * 100,
     seedPct: seedPct * 100,
     seriesaPct: seriesaPct * 100,
     preseedImpliedAtCap: (state.preseedAmt / state.preseedCap) * 100,
@@ -1438,6 +1733,14 @@ function calcDilution() {
     totalSharesPost,
     seriesaPrice,
     seriesaPreMoney,
+    lenderPct: lenderFraction * 100,
+    warrantOwnPct: warrantOwnFraction * 100,
+    interestOwnPct: interestOwnFraction * 100,
+    warrantShares,
+    interestConvShares,
+    warrantStrike,
+    accruedInterest,
+    repayment,
     postPreseedFounders: 0,
     postSeedFounders: null
   };
@@ -1544,6 +1847,11 @@ function renderSliderValues() {
   document.getElementById('preseedAmtVal').textContent = fmtMoney(state.preseedAmt);
   document.getElementById('preseedCapVal').textContent = fmtMoney(state.preseedCap);
   document.getElementById('preseedDiscVal').textContent = state.preseedDisc + '%';
+  document.getElementById('loanAmtVal').textContent = fmtMoney(state.loanAmt);
+  document.getElementById('loanRateVal').textContent = state.loanRate.toFixed(2).replace(/\.00$/, '') + '%';
+  document.getElementById('loanWarrantPctVal').textContent = state.loanWarrantPct.toFixed(2) + '%';
+  document.getElementById('loanTermYrsVal').textContent = state.loanTermYrs + ' yrs';
+  document.getElementById('loanInterestYrsVal').textContent = state.loanInterestYrs + ' yrs';
   document.getElementById('seedAmtVal').textContent = fmtMoney(state.seedAmt);
   document.getElementById('seedCapVal').textContent = fmtMoney(state.seedCap);
   document.getElementById('seedDiscVal').textContent = state.seedDisc + '%';
@@ -1554,6 +1862,45 @@ function renderSliderValues() {
   document.getElementById('accelBlock').classList.toggle('hidden', !state.accelOn);
   document.getElementById('advisorToggle').classList.toggle('on', state.advisorOn);
   document.getElementById('accelToggle').classList.toggle('on', state.accelOn);
+
+  // Top-level stage tabs
+  document.querySelectorAll('.stage-tab').forEach(t => {
+    const isActive = t.getAttribute('data-stage') === state.activeStage;
+    t.classList.toggle('active', isActive);
+    t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+  document.querySelectorAll('.stage-card-wrap').forEach(w => {
+    w.classList.toggle('active', w.getAttribute('data-stage') === state.activeStage);
+  });
+
+  // Pre-seed sub-tab state + enable toggles
+  document.querySelectorAll('.subtab').forEach(t => {
+    const sub = t.getAttribute('data-sub');
+    const active = state.preseedMode === sub;
+    t.classList.toggle('active', active);
+    t.setAttribute('aria-selected', active ? 'true' : 'false');
+    const enabled = sub === 'safe' ? state.preseedSafeOn : state.preseedLoanOn;
+    t.classList.toggle('enabled', enabled);
+  });
+  document.querySelectorAll('.subpanel').forEach(p => {
+    const sub = p.getAttribute('data-sub');
+    p.classList.toggle('active', state.preseedMode === sub);
+    const enabled = sub === 'safe' ? state.preseedSafeOn : state.preseedLoanOn;
+    p.classList.toggle('off', !enabled);
+  });
+  document.getElementById('preseedSafeToggle').classList.toggle('on', state.preseedSafeOn);
+  document.getElementById('preseedLoanToggle').classList.toggle('on', state.preseedLoanOn);
+
+  // Stage-02 status badge reflects what's active
+  const statusEl = document.getElementById('preseedStatus');
+  if (!state.preseedSafeOn && !state.preseedLoanOn) {
+    statusEl.innerHTML = '<span class="dot"></span>Stage skipped';
+  } else {
+    const parts = [];
+    if (state.preseedSafeOn) parts.push('SAFE');
+    if (state.preseedLoanOn) parts.push('Loan');
+    statusEl.innerHTML = `<span class="dot"></span>No shares issued yet · ${parts.join(' + ')} active`;
+  }
 }
 
 function renderFormationSummary() {
@@ -1583,6 +1930,25 @@ function renderCalculated(d) {
   document.getElementById('seriesaPreMoney').textContent = fmtMoney(d.seriesaPreMoney);
   document.getElementById('seriesaOwn').textContent = fmtPct(d.seriesaPct);
   document.getElementById('seriesaPrice').textContent = '$' + d.seriesaPrice.toFixed(2);
+
+  // Loan summary card
+  const primeSpread = (state.loanRate - 4.5); // Prime ~4.5% assumption for display
+  document.getElementById('loanOwnPct').textContent = fmtPct(d.lenderPct, d.lenderPct < 1 ? 2 : 1);
+  document.getElementById('loanAmtView').textContent = '$' + Math.round(state.loanAmt).toLocaleString();
+  document.getElementById('loanRateView').textContent = state.loanRate.toFixed(2).replace(/\.00$/, '') + '% fixed' + (primeSpread >= 0 ? ` (Prime+${primeSpread.toFixed(2).replace(/\.00$/, '').replace(/0$/, '')}%)` : '');
+  document.getElementById('loanWarrantPctView').textContent = state.loanWarrantPct.toFixed(2).replace(/\.00$/, '') + '%';
+  document.getElementById('loanWarrantSharesView').textContent = Math.round(d.warrantShares).toLocaleString() + ' @ $' + d.warrantStrike.toFixed(2);
+  document.getElementById('loanInterestYrsView').textContent = state.loanInterestYrs + 'yr';
+  document.getElementById('loanAccruedView').textContent = '$' + Math.round(d.accruedInterest).toLocaleString();
+  document.getElementById('loanConvSharesView').textContent = Math.round(d.interestConvShares).toLocaleString() + ' @ $' + d.seriesaPrice.toFixed(2);
+  document.getElementById('loanTermYrsView').textContent = state.loanTermYrs;
+  document.getElementById('loanRepayView').textContent = '$' + Math.round(d.repayment).toLocaleString();
+
+  const founderFormation = d.founders.reduce((s, f) => s + f.pctFormation, 0);
+  const founderFinal = d.founders.reduce((s, f) => s + f.pctFinal, 0);
+  const totalDil = Math.max(0, founderFormation - founderFinal);
+  document.getElementById('loanFounderDilView').textContent = fmtPct(totalDil, 1);
+  document.getElementById('loanFounderRetainView').textContent = fmtPct(founderFinal, 1);
 }
 
 function renderStageCards(d) {
@@ -1598,14 +1964,41 @@ function renderStageCards(d) {
       barColor: '#13294B',
       barPct: Math.min(100, founderFormation)
     },
-    {
-      label: 'Stage 02 — Pre-Seed SAFE',
-      status: 'No new shares  →',
-      metric: fmtMoney(state.preseedAmt),
-      sub: 'Cap ' + fmtMoney(state.preseedCap) + ' · ' + state.preseedDisc + '% disc',
-      barColor: COLORS.preseed,
-      barPct: Math.min(100, d.preseedImpliedAtCap * 4)
-    },
+    (function () {
+      const safeActive = state.preseedSafeOn;
+      const loanActive = state.preseedLoanOn;
+      let label, metric, sub, barColor, barPct, status;
+      if (!safeActive && !loanActive) {
+        label = 'Stage 02 — Pre-Seed';
+        status = 'Stage skipped  →';
+        metric = '—';
+        sub = 'No SAFE or loan active';
+        barColor = COLORS.preseed;
+        barPct = 0;
+      } else if (safeActive && !loanActive) {
+        label = 'Stage 02 — Pre-Seed SAFE';
+        status = 'No new shares  →';
+        metric = fmtMoney(state.preseedAmt);
+        sub = 'Cap ' + fmtMoney(state.preseedCap) + ' · ' + state.preseedDisc + '% disc';
+        barColor = COLORS.preseed;
+        barPct = Math.min(100, d.preseedImpliedAtCap * 4);
+      } else if (!safeActive && loanActive) {
+        label = 'Stage 02 — Pre-Seed Loan';
+        status = 'Warrants + interest  →';
+        metric = fmtMoney(state.loanAmt);
+        sub = state.loanRate.toFixed(2).replace(/\.00$/, '') + '% · ' + state.loanWarrantPct + '% warrants';
+        barColor = COLORS.lender;
+        barPct = Math.min(100, d.lenderPct * 20);
+      } else {
+        label = 'Stage 02 — SAFE + Loan';
+        status = 'Both active  →';
+        metric = fmtMoney(state.preseedAmt + state.loanAmt);
+        sub = 'SAFE ' + fmtPct(d.preseedImpliedAtCap, 1) + ' · Lender ' + fmtPct(d.lenderPct, 1);
+        barColor = COLORS.preseed;
+        barPct = Math.min(100, (d.preseedImpliedAtCap + d.lenderPct) * 4);
+      }
+      return { label, status, metric, sub, barColor, barPct };
+    })(),
     {
       label: 'Stage 03 — Seed SAFE',
       status: 'No new shares  →',
@@ -1661,33 +2054,37 @@ function renderEvo(d) {
   if (state.advisorOn) formationSegs.push({ pct: state.advisor, color: COLORS.advisor, label: state.advisor >= 3 ? 'Adv ' + state.advisor + '%' : '', tip: `Advisors: ${state.advisor}%. Granted to strategic advisors, typically with 2-year vesting.` });
   if (state.accelOn) formationSegs.push({ pct: state.accel, color: COLORS.accel, label: state.accel >= 4 ? (state.accelName || 'Accel') : '', tip: `${state.accelName || 'Accelerator'}: ${state.accel}%. Equity taken by accelerator in exchange for program capital and services.` });
 
-  // Phantom post-preseed: founders imagine they own (f - preseed_implied_pct)
-  const preseedPhantomFounderFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap));
+  // Phantom post-preseed: founders imagine they own (f - preseed_implied_pct - warrant_phantom)
+  const safePhantomFrac = state.preseedSafeOn ? (state.preseedAmt / state.preseedCap) : 0;
+  const warrantPhantomFrac = state.preseedLoanOn ? (state.loanWarrantPct / 100) : 0;
+  const preseedPhantomFounderFactor = Math.max(0, 1 - safePhantomFrac - warrantPhantomFrac);
   const preSegs = [];
   d.founders.forEach((f, i) => preSegs.push({
     pct: f.pctFormation * preseedPhantomFounderFactor,
     color: FOUNDER_COLORS[i % 4],
     label: (f.pctFormation * preseedPhantomFounderFactor) >= 8 ? fmtPct(f.pctFormation * preseedPhantomFounderFactor, 0) : '',
-    tip: `${f.name}: ~${fmtPct(f.pctFormation * preseedPhantomFounderFactor, 1)} as-if-converted. Actual shares unchanged — this is the phantom dilution from the pre-seed SAFE.`
+    tip: `${f.name}: ~${fmtPct(f.pctFormation * preseedPhantomFounderFactor, 1)} as-if-converted. Actual shares unchanged — this is the phantom dilution from the pre-seed instruments.`
   }));
   preSegs.push({ pct: state.pool * preseedPhantomFounderFactor, color: COLORS.pool, label: '', tip: `Option Pool (diluted phantom): ${fmtPct(state.pool * preseedPhantomFounderFactor, 1)}.` });
   if (state.advisorOn) preSegs.push({ pct: state.advisor * preseedPhantomFounderFactor, color: COLORS.advisor, label: '', tip: `Advisors (diluted phantom): ${fmtPct(state.advisor * preseedPhantomFounderFactor, 1)}.` });
   if (state.accelOn) preSegs.push({ pct: state.accel * preseedPhantomFounderFactor, color: COLORS.accel, label: '', tip: `Accelerator (diluted phantom): ${fmtPct(state.accel * preseedPhantomFounderFactor, 1)}.` });
-  preSegs.push({ pct: state.preseedAmt / state.preseedCap * 100, color: COLORS.preseed, label: 'Pre-seed SAFE', tip: `Pre-seed SAFE (not yet converted). Implied ownership at cap: ${fmtPct(d.preseedImpliedAtCap, 1)}.` });
+  if (state.preseedSafeOn) preSegs.push({ pct: safePhantomFrac * 100, color: COLORS.preseed, label: 'Pre-seed SAFE', tip: `Pre-seed SAFE (not yet converted). Implied ownership at cap: ${fmtPct(d.preseedImpliedAtCap, 1)}.` });
+  if (state.preseedLoanOn) preSegs.push({ pct: warrantPhantomFrac * 100, color: COLORS.lender, label: warrantPhantomFrac * 100 >= 4 ? 'Lender' : '', tip: `Lender warrants (not yet exercised): ${fmtPct(warrantPhantomFrac * 100, 2)} of FD. Interest conversion lands at Series A.` });
 
-  // Phantom post-seed: stack both SAFE phantoms
-  const combinedPhantomFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap) - (state.seedAmt / state.seedCap));
+  // Phantom post-seed: stack pre-seed + seed SAFE phantoms (+ warrant if loan on)
+  const combinedPhantomFactor = Math.max(0, 1 - safePhantomFrac - warrantPhantomFrac - (state.seedAmt / state.seedCap));
   const postSeedSegs = [];
   d.founders.forEach((f, i) => postSeedSegs.push({
     pct: f.pctFormation * combinedPhantomFactor,
     color: FOUNDER_COLORS[i % 4],
     label: (f.pctFormation * combinedPhantomFactor) >= 8 ? fmtPct(f.pctFormation * combinedPhantomFactor, 0) : '',
-    tip: `${f.name}: ~${fmtPct(f.pctFormation * combinedPhantomFactor, 1)} as-if-converted. Two SAFEs outstanding — dilution is already locked in on paper.`
+    tip: `${f.name}: ~${fmtPct(f.pctFormation * combinedPhantomFactor, 1)} as-if-converted. Pre-seed instruments + Seed SAFE outstanding — dilution is already locked in on paper.`
   }));
   postSeedSegs.push({ pct: state.pool * combinedPhantomFactor, color: COLORS.pool, label: '', tip: `Option Pool (diluted phantom).` });
   if (state.advisorOn) postSeedSegs.push({ pct: state.advisor * combinedPhantomFactor, color: COLORS.advisor, label: '', tip: `Advisors (diluted phantom).` });
   if (state.accelOn) postSeedSegs.push({ pct: state.accel * combinedPhantomFactor, color: COLORS.accel, label: '', tip: `Accelerator (diluted phantom).` });
-  postSeedSegs.push({ pct: state.preseedAmt / state.preseedCap * 100, color: COLORS.preseed, label: 'Pre-seed', tip: `Pre-seed SAFE implied ownership: ${fmtPct(d.preseedImpliedAtCap, 1)}.` });
+  if (state.preseedSafeOn) postSeedSegs.push({ pct: safePhantomFrac * 100, color: COLORS.preseed, label: 'Pre-seed', tip: `Pre-seed SAFE implied ownership: ${fmtPct(d.preseedImpliedAtCap, 1)}.` });
+  if (state.preseedLoanOn) postSeedSegs.push({ pct: warrantPhantomFrac * 100, color: COLORS.lender, label: warrantPhantomFrac * 100 >= 4 ? 'Lender' : '', tip: `Lender warrants: ${fmtPct(warrantPhantomFrac * 100, 2)} of FD.` });
   postSeedSegs.push({ pct: state.seedAmt / state.seedCap * 100, color: COLORS.seed, label: 'Seed SAFE', tip: `Seed SAFE implied ownership: ${fmtPct(d.seedImpliedAtCap, 1)}.` });
 
   // Post-Series A (real)
@@ -1700,7 +2097,8 @@ function renderEvo(d) {
   finalSegs.push({ pct: d.poolFinalPct, color: COLORS.pool, label: d.poolFinalPct >= 5 ? 'Pool' : '', tip: `Option Pool: ${fmtPct(d.poolFinalPct, 2)} post-Series A.` });
   if (state.advisorOn) finalSegs.push({ pct: d.advisorFinalPct, color: COLORS.advisor, label: '', tip: `Advisors: ${fmtPct(d.advisorFinalPct, 2)}.` });
   if (state.accelOn) finalSegs.push({ pct: d.accelFinalPct, color: COLORS.accel, label: '', tip: `${state.accelName || 'Accelerator'}: ${fmtPct(d.accelFinalPct, 2)}.` });
-  finalSegs.push({ pct: d.preseedPct, color: COLORS.preseed, label: d.preseedPct >= 5 ? 'Pre-seed' : '', tip: `Pre-seed SAFE converted: ${fmtPct(d.preseedPct, 2)}.` });
+  if (state.preseedSafeOn) finalSegs.push({ pct: d.preseedPct, color: COLORS.preseed, label: d.preseedPct >= 5 ? 'Pre-seed' : '', tip: `Pre-seed SAFE converted: ${fmtPct(d.preseedPct, 2)}.` });
+  if (state.preseedLoanOn) finalSegs.push({ pct: d.lenderPct, color: COLORS.lender, label: d.lenderPct >= 4 ? 'Lender' : '', tip: `Lender: ${fmtPct(d.lenderPct, 2)} (warrants ${fmtPct(d.warrantOwnPct, 2)} + interest conv. ${fmtPct(d.interestOwnPct, 2)}).` });
   finalSegs.push({ pct: d.seedPct, color: COLORS.seed, label: d.seedPct >= 5 ? 'Seed' : '', tip: `Seed SAFE converted: ${fmtPct(d.seedPct, 2)}.` });
   finalSegs.push({ pct: d.seriesaPct, color: COLORS.seriesa, label: d.seriesaPct >= 5 ? 'Series A' : '', tip: `Series A investors: ${fmtPct(d.seriesaPct, 2)}.` });
 
@@ -1738,7 +2136,8 @@ function renderEvo(d) {
     { color: COLORS.pool, label: 'Option Pool' },
     ...(state.advisorOn ? [{ color: COLORS.advisor, label: 'Advisors' }] : []),
     ...(state.accelOn ? [{ color: COLORS.accel, label: state.accelName || 'Accelerator' }] : []),
-    { color: COLORS.preseed, label: 'Pre-Seed SAFE' },
+    ...(state.preseedSafeOn ? [{ color: COLORS.preseed, label: 'Pre-Seed SAFE' }] : []),
+    ...(state.preseedLoanOn ? [{ color: COLORS.lender, label: 'Lender (Loan)' }] : []),
     { color: COLORS.seed, label: 'Seed SAFE' },
     { color: COLORS.seriesa, label: 'Series A' }
   ];
@@ -1798,12 +2197,20 @@ function renderCapTable(d) {
     notes: `${fmtPct(state.accel, 1)} granted at formation`
   });
 
-  rows.push({
+  if (state.preseedSafeOn) rows.push({
     stakeholder: 'Pre-Seed SAFE Holders',
     color: COLORS.preseed,
     shares: Math.round(d.preseedPct / 100 * d.totalSharesPost),
     pct: d.preseedPct,
     notes: `Converts at ${fmtMoney(d.preEffVal)} (${d.preEffVal === state.preseedCap ? 'cap' : 'discount'})`
+  });
+
+  if (state.preseedLoanOn) rows.push({
+    stakeholder: 'Lender (Loan — warrants + interest)',
+    color: COLORS.lender,
+    shares: Math.round(d.lenderPct / 100 * d.totalSharesPost),
+    pct: d.lenderPct,
+    notes: `${fmtPct(d.warrantOwnPct, 2)} warrants @ $${d.warrantStrike.toFixed(2)} + ${Math.round(d.interestConvShares).toLocaleString()} interest-conv. shares @ $${d.seriesaPrice.toFixed(2)}`
   });
 
   rows.push({
@@ -1884,7 +2291,9 @@ function bindSlider(id, key, transform = v => +v) {
 }
 
 function applyState(s) {
+  const prevStage = state && state.activeStage ? state.activeStage : 'formation';
   state = JSON.parse(JSON.stringify(s));
+  if (!state.activeStage) state.activeStage = prevStage;
   // Sync DOM slider values
   document.getElementById('pool').value = state.pool;
   document.getElementById('advisor').value = state.advisor;
@@ -1893,6 +2302,11 @@ function applyState(s) {
   document.getElementById('preseedAmt').value = state.preseedAmt;
   document.getElementById('preseedCap').value = state.preseedCap;
   document.getElementById('preseedDisc').value = state.preseedDisc;
+  document.getElementById('loanAmt').value = state.loanAmt;
+  document.getElementById('loanRate').value = state.loanRate;
+  document.getElementById('loanWarrantPct').value = state.loanWarrantPct;
+  document.getElementById('loanTermYrs').value = state.loanTermYrs;
+  document.getElementById('loanInterestYrs').value = state.loanInterestYrs;
   document.getElementById('seedAmt').value = state.seedAmt;
   document.getElementById('seedCap').value = state.seedCap;
   document.getElementById('seedDisc').value = state.seedDisc;
@@ -1975,10 +2389,33 @@ function buildInputsWS(d) {
 
   addRow(['PRE-SEED SAFE', ''], { allStyle: XS.sectionHeader });
   addRow(['Parameter', 'Value'], { allStyle: XS.columnHeader });
-  addRow(['Amount Raised', state.preseedAmt], { cellStyles: [XS.cell, XS.cellMoney] });
-  addRow(['Valuation Cap', state.preseedCap], { cellStyles: [XS.cell, XS.cellMoney] });
-  addRow(['Discount Rate', state.preseedDisc / 100], { cellStyles: [XS.cell, XS.cellPct] });
-  addRow(['Implied Ownership at Cap', d.preseedImpliedAtCap / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  if (state.preseedSafeOn) {
+    addRow(['Amount Raised', state.preseedAmt], { cellStyles: [XS.cell, XS.cellMoney] });
+    addRow(['Valuation Cap', state.preseedCap], { cellStyles: [XS.cell, XS.cellMoney] });
+    addRow(['Discount Rate', state.preseedDisc / 100], { cellStyles: [XS.cell, XS.cellPct] });
+    addRow(['Implied Ownership at Cap', d.preseedImpliedAtCap / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  } else {
+    addRow(['Status', 'Not enabled'], { cellStyles: [XS.cell, XS.cell] });
+  }
+  addRow([]);
+
+  addRow(['PRE-SEED LOAN (Venture Debt)', ''], { allStyle: XS.sectionHeader });
+  addRow(['Parameter', 'Value'], { allStyle: XS.columnHeader });
+  if (state.preseedLoanOn) {
+    addRow(['Loan Amount', state.loanAmt], { cellStyles: [XS.cell, XS.cellMoney] });
+    addRow(['Interest Rate (Prime+2%)', state.loanRate / 100], { cellStyles: [XS.cell, XS.cellPct] });
+    addRow(['Warrant % of FD', state.loanWarrantPct / 100], { cellStyles: [XS.cell, XS.cellPct] });
+    addRow(['Warrant Strike Price', d.warrantStrike], { cellStyles: [XS.cell, XS.cellMoneyFine] });
+    addRow(['Warrant Shares', Math.round(d.warrantShares)], { cellStyles: [XS.cell, XS.cellNum] });
+    addRow(['Term (years)', state.loanTermYrs], { cellStyles: [XS.cell, XS.cellNum] });
+    addRow(['Interest Accrual (years)', state.loanInterestYrs], { cellStyles: [XS.cell, XS.cellNum] });
+    addRow(['Accrued Interest', d.accruedInterest], { cellStyles: [XS.cell, XS.cellMoney] });
+    addRow(['Interest Conversion Shares', Math.round(d.interestConvShares)], { cellStyles: [XS.cell, XS.cellNum] });
+    addRow(['Repayment (Principal + Interest)', d.repayment], { cellStyles: [XS.cell, XS.cellMoney] });
+    addRow(['Lender Final Ownership', d.lenderPct / 100], { cellStyles: [XS.cell, XS.cellPct] });
+  } else {
+    addRow(['Status', 'Not enabled'], { cellStyles: [XS.cell, XS.cell] });
+  }
   addRow([]);
 
   addRow(['SEED SAFE', ''], { allStyle: XS.sectionHeader });
@@ -2037,7 +2474,8 @@ function buildCapTableWS(d) {
   addStake('Option Pool', d.poolFinalPct, `${state.pool}% reserved at formation`);
   if (state.advisorOn) addStake('Advisors', d.advisorFinalPct, `${state.advisor}% granted at formation`);
   if (state.accelOn) addStake(state.accelName || 'Accelerator', d.accelFinalPct, `${state.accel}% granted at formation`);
-  addStake('Pre-Seed SAFE Holders', d.preseedPct, `Converts at ${fmtMoney(d.preEffVal)} (${d.preEffVal === state.preseedCap ? 'cap' : 'discount'})`);
+  if (state.preseedSafeOn) addStake('Pre-Seed SAFE Holders', d.preseedPct, `Converts at ${fmtMoney(d.preEffVal)} (${d.preEffVal === state.preseedCap ? 'cap' : 'discount'})`);
+  if (state.preseedLoanOn) addStake('Lender (Loan)', d.lenderPct, `Warrants ${fmtPct(d.warrantOwnPct, 2)} + interest conv. ${fmtPct(d.interestOwnPct, 2)}; repayment ${fmtMoney(d.repayment)}`);
   addStake('Seed SAFE Holders', d.seedPct, `Converts at ${fmtMoney(d.seedEffVal)} (${d.seedEffVal === state.seedCap ? 'cap' : 'discount'})`);
   addStake('Series A Investors', d.seriesaPct, `Preferred stock at $${d.seriesaPrice.toFixed(2)} / share`);
 
@@ -2052,8 +2490,11 @@ function buildEvolutionWS(d) {
 
   const founderFormPct = d.founders.reduce((s, f) => s + f.pctFormation, 0);
   const founderFinalPct = d.founders.reduce((s, f) => s + f.pctFinal, 0);
-  const preFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap));
-  const combinedFactor = Math.max(0, 1 - (state.preseedAmt / state.preseedCap) - (state.seedAmt / state.seedCap));
+  const safePreFrac = state.preseedSafeOn ? (state.preseedAmt / state.preseedCap) : 0;
+  const warrantFrac = state.preseedLoanOn ? (state.loanWarrantPct / 100) : 0;
+  const seedFrac = state.seedAmt / state.seedCap;
+  const preFactor = Math.max(0, 1 - safePreFrac - warrantFrac);
+  const combinedFactor = Math.max(0, 1 - safePreFrac - warrantFrac - seedFrac);
   const advisorFormation = state.advisorOn ? state.advisor : 0;
   const accelFormation = state.accelOn ? state.accel : 0;
 
@@ -2061,22 +2502,25 @@ function buildEvolutionWS(d) {
   addRow([`Exported ${new Date().toLocaleString()}`], { cellStyles: [XS.subtitle] });
   addRow([]);
 
-  addRow(['Stage', 'Founders', 'Option Pool', 'Advisors', 'Accelerator', 'Pre-Seed SAFE', 'Seed SAFE', 'Series A'], { allStyle: XS.columnHeader });
+  addRow(['Stage', 'Founders', 'Option Pool', 'Advisors', 'Accelerator', 'Pre-Seed SAFE', 'Lender (Loan)', 'Seed SAFE', 'Series A'], { allStyle: XS.columnHeader });
 
-  const pctStyles = [XS.cell, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct];
+  const pctStyles = [XS.cell, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct, XS.cellPct];
 
-  addRow(['Formation', founderFormPct / 100, state.pool / 100, advisorFormation / 100, accelFormation / 100, 0, 0, 0], { cellStyles: pctStyles });
-  addRow(['Post-Pre-Seed (phantom)', (founderFormPct * preFactor) / 100, (state.pool * preFactor) / 100, (advisorFormation * preFactor) / 100, (accelFormation * preFactor) / 100, state.preseedAmt / state.preseedCap, 0, 0], { cellStyles: pctStyles });
-  addRow(['Post-Seed (phantom)', (founderFormPct * combinedFactor) / 100, (state.pool * combinedFactor) / 100, (advisorFormation * combinedFactor) / 100, (accelFormation * combinedFactor) / 100, state.preseedAmt / state.preseedCap, state.seedAmt / state.seedCap, 0], { cellStyles: pctStyles });
-  addRow(['Post-Series A', founderFinalPct / 100, d.poolFinalPct / 100, d.advisorFinalPct / 100, d.accelFinalPct / 100, d.preseedPct / 100, d.seedPct / 100, d.seriesaPct / 100],
-    { cellStyles: [XS.totalRow, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct] });
+  addRow(['Formation', founderFormPct / 100, state.pool / 100, advisorFormation / 100, accelFormation / 100, 0, 0, 0, 0], { cellStyles: pctStyles });
+  addRow(['Post-Pre-Seed (phantom)', (founderFormPct * preFactor) / 100, (state.pool * preFactor) / 100, (advisorFormation * preFactor) / 100, (accelFormation * preFactor) / 100, safePreFrac, warrantFrac, 0, 0], { cellStyles: pctStyles });
+  addRow(['Post-Seed (phantom)', (founderFormPct * combinedFactor) / 100, (state.pool * combinedFactor) / 100, (advisorFormation * combinedFactor) / 100, (accelFormation * combinedFactor) / 100, safePreFrac, warrantFrac, seedFrac, 0], { cellStyles: pctStyles });
+  addRow(['Post-Series A', founderFinalPct / 100, d.poolFinalPct / 100, d.advisorFinalPct / 100, d.accelFinalPct / 100, d.preseedPct / 100, d.lenderPct / 100, d.seedPct / 100, d.seriesaPct / 100],
+    { cellStyles: [XS.totalRow, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct, XS.totalRowPct] });
 
   addRow([]);
   addRow(['Summary'], { cellStyles: [XS.sectionHeader] });
   addRow([`Founder ownership went from ${founderFormPct.toFixed(1)}% at formation to ${founderFinalPct.toFixed(1)}% post-Series A (total dilution ${(founderFormPct - founderFinalPct).toFixed(1)}%).`], { cellStyles: [XS.note] });
   addRow(['Phantom rows show the as-if-converted view before the priced round. No shares are actually issued until Series A conversion.'], { cellStyles: [XS.note] });
+  if (state.preseedLoanOn) {
+    addRow([`Lender column includes warrant coverage (${fmtPct(d.warrantOwnPct, 2)}) plus interest conversion at Series A (${fmtPct(d.interestOwnPct, 2)}). Total lender stake: ${fmtPct(d.lenderPct, 2)}.`], { cellStyles: [XS.note] });
+  }
 
-  return finalize([26, 13, 13, 13, 13, 15, 15, 13]);
+  return finalize([26, 13, 13, 13, 13, 15, 15, 15, 13]);
 }
 
 function exportExcel() {
@@ -2108,6 +2552,11 @@ function init() {
   bindSlider('preseedAmt', 'preseedAmt');
   bindSlider('preseedCap', 'preseedCap');
   bindSlider('preseedDisc', 'preseedDisc');
+  bindSlider('loanAmt', 'loanAmt');
+  bindSlider('loanRate', 'loanRate');
+  bindSlider('loanWarrantPct', 'loanWarrantPct');
+  bindSlider('loanTermYrs', 'loanTermYrs');
+  bindSlider('loanInterestYrs', 'loanInterestYrs');
   bindSlider('seedAmt', 'seedAmt');
   bindSlider('seedCap', 'seedCap');
   bindSlider('seedDisc', 'seedDisc');
@@ -2126,6 +2575,30 @@ function init() {
   document.getElementById('accelToggle').addEventListener('click', () => {
     state.accelOn = !state.accelOn;
     renderAll();
+  });
+
+  document.getElementById('preseedSafeToggle').addEventListener('click', () => {
+    state.preseedSafeOn = !state.preseedSafeOn;
+    renderAll();
+  });
+  document.getElementById('preseedLoanToggle').addEventListener('click', () => {
+    state.preseedLoanOn = !state.preseedLoanOn;
+    renderAll();
+  });
+
+  document.querySelectorAll('.subtab[data-sub]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const sub = tab.getAttribute('data-sub');
+      state.preseedMode = sub;
+      renderAll();
+    });
+  });
+
+  document.querySelectorAll('.stage-tab[data-stage]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      state.activeStage = tab.getAttribute('data-stage');
+      renderAll();
+    });
   });
 
   document.getElementById('addFounder').addEventListener('click', () => {
